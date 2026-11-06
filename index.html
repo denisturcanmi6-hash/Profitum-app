@@ -118,7 +118,7 @@
                     </div>
                     <p class="text-xs text-gray-600" data-i18n="proDesc">Подключите PRO-аккаунт (199 MDL), чтобы быть в топе и получать больше заказов!</p>
                     <button onclick="openPayModal('PRO', 'PRO-аккаунт', 199)" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 rounded-lg text-xs transition" data-i18n="proBtn">
-                        Подключить PRO (Crypto)
+                        Подключить PRO (Карта / MIA)
                     </button>
                 </div>
             </div>
@@ -165,7 +165,7 @@
                 <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-2">
                     <h3 class="font-bold text-emerald-900 text-sm" data-i18n="mySubTitle">Ваш PRO-статус</h3>
                     <p class="text-xs text-emerald-700" data-i18n="mySubDesc">Получайте больше заказов и приоритет в поисковой выдаче.</p>
-                    <button onclick="openPayModal('PRO', 'PRO-аккаунт', 199)" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-2 rounded-lg transition" data-i18n="proBtn">Подключить PRO (Crypto)</button>
+                    <button onclick="openPayModal('PRO', 'PRO-аккаунт', 199)" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-2 rounded-lg transition" data-i18n="proBtn">Подключить PRO (Карта / MIA)</button>
                 </div>
                 <div class="bg-gray-50 border p-4 rounded-xl space-y-2">
                     <h3 class="font-bold text-gray-800 text-sm" data-i18n="myStatsTitle">Статистика профиля</h3>
@@ -239,23 +239,65 @@
 <div id="modal-pay" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 space-y-4">
         <div class="flex justify-between items-center border-b pb-3">
-            <h3 class="font-bold text-gray-800 text-lg" id="pay-modal-title" data-i18n="payTitle">Безопасная сделка</h3>
+            <h3 class="font-bold text-gray-800 text-lg" id="pay-modal-title" data-i18n="payTitle">Оплата услуг PROFITUM</h3>
             <button onclick="closePayModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
         <div class="bg-gray-50 p-3 rounded-lg border text-xs space-y-1.5">
             <div class="flex justify-between"><span class="text-gray-500" data-i18n="payService">Услуга / Задание:</span> <span id="pay-task-title" class="font-semibold text-right"></span></div>
             <div class="flex justify-between text-emerald-600 font-bold text-sm border-t pt-1.5"><span class="text-gray-800" data-i18n="payTotal">К оплате:</span> <span id="pay-task-fee"></span></div>
         </div>
-        <div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl space-y-2">
-            <span class="text-xs font-bold text-emerald-900 block"><i class="fa-solid fa-coins text-emerald-600 mr-1.5"></i>Кошелек USDT (TRC-20)</span>
-            <div class="flex items-center bg-white border border-emerald-200 rounded px-2 py-1.5">
-                <input type="text" id="wallet-address" value="TVASbmZjD48G6MuYeëzi6o8QPa9gPRJ8MY" readonly class="w-full text-xs font-mono bg-transparent text-gray-700 focus:outline-none">
-                <button onclick="navigator.clipboard.writeText('TVASbmZjD48G6MuYeëzi6o8QPa9gPRJ8MY'); alert('Скопировано!');" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded ml-1 font-semibold hover:bg-emerald-700" data-i18n="copyBtn">Копировать</button>
+
+        <div class="space-y-2 pt-1">
+            <p class="text-xs font-bold text-gray-700 uppercase" data-i18n="chooseMethod">Выберите способ оплаты:</p>
+            
+            <!-- Оплата картой -->
+            <button onclick="payWithCard()" class="w-full flex items-center justify-between p-3 border rounded-xl hover:bg-emerald-50 hover:border-emerald-500 transition group">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-emerald-100 text-emerald-700 p-2 rounded-lg"><i class="fa-solid fa-credit-card"></i></div>
+                    <div class="text-left">
+                        <span class="font-bold text-xs text-gray-900 block" data-i18n="cardPayTitle">Банковская карта / Apple Pay</span>
+                        <span class="text-[10px] text-gray-500" data-i18n="cardPayDesc">Visa, Mastercard (MDL)</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+            </button>
+
+            <!-- Оплата через MIA -->
+            <button onclick="payWithMIA()" class="w-full flex items-center justify-between p-3 border rounded-xl hover:bg-emerald-50 hover:border-emerald-500 transition group">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-100 text-blue-700 p-2 rounded-lg font-black text-xs">MIA</div>
+                    <div class="text-left">
+                        <span class="font-bold text-xs text-gray-900 block" data-i18n="miaPayTitle">MIA Платежи (в приложении банка)</span>
+                        <span class="text-[10px] text-gray-500" data-i18n="miaPayDesc">Мгновенный перевод со смартфона</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+            </button>
+
+            <!-- Криптовалюта -->
+            <button onclick="toggleCryptoBox()" class="w-full flex items-center justify-between p-3 border rounded-xl hover:bg-emerald-50 hover:border-emerald-500 transition group">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-amber-100 text-amber-700 p-2 rounded-lg"><i class="fa-solid fa-coins"></i></div>
+                    <div class="text-left">
+                        <span class="font-bold text-xs text-gray-900 block" data-i18n="cryptoPayTitle">Криптовалюта (USDT TRC-20)</span>
+                        <span class="text-[10px] text-gray-500" data-i18n="cryptoPayDesc">Для криптокошельков</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+            </button>
+
+            <!-- Скрытый блок для USDT -->
+            <div id="crypto-box" class="hidden bg-emerald-50 border border-emerald-300 p-3 rounded-xl space-y-2 mt-2">
+                <span class="text-xs font-bold text-emerald-900 block">USDT (TRC-20) Кошелек:</span>
+                <div class="flex items-center bg-white border border-emerald-200 rounded px-2 py-1.5">
+                    <input type="text" id="wallet-address" value="TVASbmZjD48G6MuYeëzi6o8QPa9gPRJ8MY" readonly class="w-full text-xs font-mono bg-transparent text-gray-700 focus:outline-none">
+                    <button onclick="navigator.clipboard.writeText('TVASbmZjD48G6MuYeëzi6o8QPa9gPRJ8MY'); alert('Скопировано!');" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded ml-1 font-semibold hover:bg-emerald-700" data-i18n="copyBtn">Копировать</button>
+                </div>
             </div>
         </div>
-        <div class="flex justify-end space-x-2 pt-2 border-t">
+
+        <div class="flex justify-end pt-2 border-t">
             <button onclick="closePayModal()" class="px-4 py-2 border rounded-lg text-sm" data-i18n="cancelBtn">Отмена</button>
-            <button onclick="confirmEscrowPayment()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700" data-i18n="confirmBtn">Подтвердить перевод</button>
         </div>
     </div>
 </div>
@@ -296,7 +338,7 @@
             promoBtn: "Разместить задание",
             proTitle: "Вы мастер в Кишиневе?",
             proDesc: "Подключите PRO-аккаунт (199 MDL), чтобы быть в топе и получать больше заказов!",
-            proBtn: "Подключить PRO (Crypto)",
+            proBtn: "Подключить PRO (Карта / MIA)",
             executorsHeader: "Проверенные исполнители в Кишиневе",
             modalCreateTitle: "Новое задание",
             labelTitle: "Что нужно сделать?",
@@ -306,11 +348,17 @@
             labelDesc: "Подробное описание",
             cancelBtn: "Отмена",
             submitBtn: "Опубликовать",
-            payTitle: "Безопасная сделка",
+            payTitle: "Оплата услуг PROFITUM",
             payService: "Услуга / Задание:",
             payTotal: "К оплате:",
+            chooseMethod: "Выберите способ оплаты:",
+            cardPayTitle: "Банковская карта / Apple Pay",
+            cardPayDesc: "Visa, Mastercard (MDL)",
+            miaPayTitle: "MIA Платежи (в приложении банка)",
+            miaPayDesc: "Мгновенный перевод со смартфона",
+            cryptoPayTitle: "Криптовалюта (USDT TRC-20)",
+            cryptoPayDesc: "Для криптокошельков",
             copyBtn: "Копировать",
-            confirmBtn: "Подтвердить перевод",
             payBtnText: "Оплатить сделку",
             noTasks: "Заданий пока нет. Создайте первое!",
             mySubTitle: "Ваш PRO-статус",
@@ -343,7 +391,7 @@
             promoBtn: "Plasează o sarcină",
             proTitle: "Ești meșter în Chișinău?",
             proDesc: "Conectează contul PRO (199 MDL) pentru a fi în top și a primi mai multe comenzi!",
-            proBtn: "Conectare PRO (Crypto)",
+            proBtn: "Conectare PRO (Card / MIA)",
             executorsHeader: "Executanți verificați în Chișinău",
             modalCreateTitle: "Sarcină nouă",
             labelTitle: "Ce trebuie făcut?",
@@ -353,12 +401,18 @@
             labelDesc: "Descriere detaliată",
             cancelBtn: "Anulare",
             submitBtn: "Publică",
-            payTitle: "Tranzacție sigură",
+            payTitle: "Plata serviciilor PROFITUM",
             payService: "Serviciu / Sarcină:",
             payTotal: "De plată:",
+            chooseMethod: "Alegeți metoda de plată:",
+            cardPayTitle: "Card bancar / Apple Pay",
+            cardPayDesc: "Visa, Mastercard (MDL)",
+            miaPayTitle: "Plăți MIA (în aplicația bancară)",
+            miaPayDesc: "Transfer instantaneu",
+            cryptoPayTitle: "Criptomonedă (USDT TRC-20)",
+            cryptoPayDesc: "Pentru portofele crypto",
             copyBtn: "Copiază",
-            confirmBtn: "Confirmă transferul",
-            payBtnText: "Achită tranzacția",
+            payBtnText: "Achită",
             noTasks: "Nu există sarcini încă. Creează prima!",
             mySubTitle: "Statutul tău PRO",
             mySubDesc: "Primește mai multe comenzi și prioritate în căutare.",
@@ -390,7 +444,7 @@
             promoBtn: "Post a task",
             proTitle: "Are you a master in Chisinau?",
             proDesc: "Connect PRO account (199 MDL) to rank higher and get more orders!",
-            proBtn: "Connect PRO (Crypto)",
+            proBtn: "Connect PRO (Card / MIA)",
             executorsHeader: "Verified executors in Chisinau",
             modalCreateTitle: "New Task",
             labelTitle: "What needs to be done?",
@@ -400,12 +454,18 @@
             labelDesc: "Detailed description",
             cancelBtn: "Cancel",
             submitBtn: "Publish",
-            payTitle: "Secure Escrow",
+            payTitle: "PROFITUM Payment",
             payService: "Service / Task:",
             payTotal: "Total:",
+            chooseMethod: "Choose payment method:",
+            cardPayTitle: "Bank Card / Apple Pay",
+            cardPayDesc: "Visa, Mastercard (MDL)",
+            miaPayTitle: "MIA Instant Payments",
+            miaPayDesc: "Instant bank app transfer",
+            cryptoPayTitle: "Cryptocurrency (USDT TRC-20)",
+            cryptoPayDesc: "For crypto wallets",
             copyBtn: "Copy",
-            confirmBtn: "Confirm Transfer",
-            payBtnText: "Pay Escrow",
+            payBtnText: "Pay",
             noTasks: "No tasks yet. Create the first one!",
             mySubTitle: "Your PRO Status",
             mySubDesc: "Get more orders and priority ranking.",
@@ -437,7 +497,7 @@
             promoBtn: "Pubblica compito",
             proTitle: "Sei un professionista a Chișinău?",
             proDesc: "Attiva l'account PRO (199 MDL) per essere in cima e ricevere più ordini!",
-            proBtn: "Attiva PRO (Crypto)",
+            proBtn: "Attiva PRO (Carta / MIA)",
             executorsHeader: "Esecutori verificati a Chișinău",
             modalCreateTitle: "Nuovo compito",
             labelTitle: "Cosa bisogna fare?",
@@ -447,12 +507,18 @@
             labelDesc: "Descrizione dettagliata",
             cancelBtn: "Annulla",
             submitBtn: "Pubblica",
-            payTitle: "Transazione sicura",
+            payTitle: "Pagamento PROFITUM",
             payService: "Servizio / Compito:",
             payTotal: "Totale da pagare:",
+            chooseMethod: "Scegli il metodo di pagamento:",
+            cardPayTitle: "Carta bancaria / Apple Pay",
+            cardPayDesc: "Visa, Mastercard (MDL)",
+            miaPayTitle: "Pagamenti MIA (App bancaria)",
+            miaPayDesc: "Bonifico istantaneo",
+            cryptoPayTitle: "Criptovaluta (USDT TRC-20)",
+            cryptoPayDesc: "Per portafogli crypto",
             copyBtn: "Copia",
-            confirmBtn: "Conferma bonifico",
-            payBtnText: "Paga transazione",
+            payBtnText: "Paga",
             noTasks: "Nessun compito ancora. Crea il primo!",
             mySubTitle: "Il tuo stato PRO",
             mySubDesc: "Ottieni più ordini e priorità nei risultati.",
@@ -676,11 +742,26 @@
         document.getElementById('pay-modal-title').textContent = t.payTitle;
         document.getElementById('pay-task-title').textContent = title;
         document.getElementById('pay-task-fee').textContent = price + ' MDL';
+        document.getElementById('crypto-box').classList.add('hidden');
         document.getElementById('modal-pay').classList.remove('hidden');
     }
 
     function closePayModal() { document.getElementById('modal-pay').classList.add('hidden'); }
-    function confirmEscrowPayment() { alert('Перевод в обработке!'); closePayModal(); }
+    
+    function payWithCard() {
+        alert('Переход на защищенный шлюз оплаты (Apple Pay / Карты)...');
+        closePayModal();
+    }
+
+    function payWithMIA() {
+        alert('Запуск мгновенного перевода через MIA...');
+        closePayModal();
+    }
+
+    function toggleCryptoBox() {
+        const box = document.getElementById('crypto-box');
+        box.classList.toggle('hidden');
+    }
 
     fetchTasks();
 </script>
