@@ -308,6 +308,7 @@
     <!-- Скрипты -->
     <script>
         const SUPABASE_URL = "https://xudwyqmpucmqgjjpbgll.supabase.co";
+        // Используем универсальный ключ доступа для работы со стандартом проекта
         const SUPABASE_ANON_KEY = "Sb_publishable_dxJStXW9jVQ4XUZE_J5Umw_jNr2Vw8h";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -625,12 +626,11 @@
                     const file = fileInput.files[0];
                     const fileName = `task_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
                     
-                    // Прямой метод загрузки файла через Storage REST API с публичным ключом
                     const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/task-photos/${fileName}`, {
                         method: 'POST',
                         headers: {
                             'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Basic ${SUPABASE_ANON_KEY}`,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                             'Content-Type': file.type || 'image/jpeg'
                         },
                         body: file
@@ -688,7 +688,7 @@
                     method: 'POST',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Basic ${SUPABASE_ANON_KEY}`,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                         'Content-Type': file.type || 'image/jpeg'
                     },
                     body: file
