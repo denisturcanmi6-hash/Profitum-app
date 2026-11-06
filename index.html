@@ -161,6 +161,19 @@
                 </div>
             </div>
 
+            <!-- Реквизиты для выплат (MIA) -->
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl space-y-2">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-blue-600 text-white font-black text-[10px] px-2 py-0.5 rounded">MIA</span>
+                    <h4 class="font-bold text-gray-900 text-xs" data-i18n="miaPayoutHeader">Реквизиты для получения выплат (MIA)</h4>
+                </div>
+                <p class="text-[11px] text-gray-600" data-i18n="miaPayoutDesc">Укажите номер телефона, привязанный к MIA в вашем молдавском банке (maib, Victoriabank и др.), для автовыплат за выполненные заказы.</p>
+                <div class="flex gap-2">
+                    <input type="tel" id="user-mia-phone" placeholder="+37360123456" class="w-full border rounded-lg px-3 py-2 text-xs bg-white">
+                    <button onclick="saveMiaPhone()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition whitespace-nowrap" data-i18n="saveMiaBtn">Сохранить MIA</button>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-2">
                     <h3 class="font-bold text-emerald-900 text-sm" data-i18n="mySubTitle">Ваш PRO-статус</h3>
@@ -308,7 +321,8 @@
         name: tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : 'Гость PROFITUM',
         username: tgUser?.username ? '@' + tgUser.username : '@guest',
         phone: localStorage.getItem('profitum_phone') || '',
-        whatsapp: localStorage.getItem('profitum_wa') || ''
+        whatsapp: localStorage.getItem('profitum_wa') || '',
+        miaPhone: localStorage.getItem('profitum_mia_phone') || ''
     };
 
     const SUPABASE_URL = 'https://sbrfqvudthjjbujhblnd.supabase.co';
@@ -372,6 +386,9 @@
             saveContactsBtn: "Сохранить контакты",
             standardAccount: "Стандартный аккаунт",
             ratingLabel: "⭐ Рейтинг:",
+            miaPayoutHeader: "Реквизиты для получения выплат (MIA)",
+            miaPayoutDesc: "Укажите номер телефона, привязанный к MIA в вашем молдавском банке (maib, Victoriabank и др.), для автовыплат за выполненные заказы.",
+            saveMiaBtn: "Сохранить MIA",
             repair: "Бытовой ремонт",
             cleaning: "Уборка",
             delivery: "Курьеры и доставка",
@@ -431,6 +448,9 @@
             saveContactsBtn: "Salvează contactele",
             standardAccount: "Cont standard",
             ratingLabel: "⭐ Rating:",
+            miaPayoutHeader: "Rechizite pentru primirea plăților (MIA)",
+            miaPayoutDesc: "Introduceți numărul de telefon conectat la MIA în banca dvs. din Moldova (maib, Victoriabank etc.) pentru plăți automate.",
+            saveMiaBtn: "Salvează MIA",
             repair: "Reparații minore",
             cleaning: "Curățenie",
             delivery: "Curierat și livrare",
@@ -490,6 +510,9 @@
             saveContactsBtn: "Save Contacts",
             standardAccount: "Standard Account",
             ratingLabel: "⭐ Rating:",
+            miaPayoutHeader: "MIA Payout Details",
+            miaPayoutDesc: "Enter the phone number linked to MIA in your Moldovan bank app (maib, Victoriabank, etc.) for automated payouts.",
+            saveMiaBtn: "Save MIA",
             repair: "Home Repair",
             cleaning: "Cleaning",
             delivery: "Courier & Delivery",
@@ -549,6 +572,9 @@
             saveContactsBtn: "Salva contatti",
             standardAccount: "Account Standard",
             ratingLabel: "⭐ Valutazione:",
+            miaPayoutHeader: "Dettagli di pagamento MIA",
+            miaPayoutDesc: "Inserisci il numero di telefono collegato a MIA nella tua banca moldava per i pagamenti automatici.",
+            saveMiaBtn: "Salva MIA",
             repair: "Riparazioni domestiche",
             cleaning: "Pulizie",
             delivery: "Corriere e consegne",
@@ -715,6 +741,7 @@
 
         document.getElementById('user-phone').value = currentUser.phone;
         document.getElementById('user-whatsapp').value = currentUser.whatsapp;
+        document.getElementById('user-mia-phone').value = currentUser.miaPhone;
 
         const userTasks = tasksList.filter(item => item.user_id == currentUser.id);
         document.getElementById('user-tasks-count').textContent = userTasks.length;
@@ -744,6 +771,12 @@
         localStorage.setItem('profitum_phone', currentUser.phone);
         localStorage.setItem('profitum_wa', currentUser.whatsapp);
         alert('Контакты успешно сохранены!');
+    }
+
+    function saveMiaPhone() {
+        currentUser.miaPhone = document.getElementById('user-mia-phone').value;
+        localStorage.setItem('profitum_mia_phone', currentUser.miaPhone);
+        alert('Номер телефона для MIA выплат успешно сохранен!');
     }
 
     function openCreateModal() { document.getElementById('modal-create').classList.remove('hidden'); }
