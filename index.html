@@ -129,6 +129,13 @@
                 </div>
             </div>
         </div>
+
+        <!-- Кнопка доступа к Админ-панели -->
+        <div class="pt-6 text-center">
+            <button onclick="openAdminModal()" class="text-[11px] text-gray-400 hover:text-emerald-600 transition font-medium">
+                🔐 Админ-панель (Выдать VIP)
+            </button>
+        </div>
     </main>
 
     <!-- Модальное окно VIP -->
@@ -148,6 +155,26 @@
                 <button onclick="confirmVipPayment()" id="vipPayBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs py-3 rounded-xl shadow-md shadow-emerald-600/20 transition">⚡ Оплатить через MIA / Карту</button>
                 <button onclick="closeVipModal()" id="vipCloseBtn" class="w-full text-gray-500 hover:text-gray-700 font-medium text-xs py-2 transition">Закрыть</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно АДМИНКИ (личная выдача VIP) -->
+    <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 class="font-bold text-sm text-gray-900">👑 Панель Администратора</h3>
+                <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+            </div>
+            <p class="text-xs text-gray-500 leading-relaxed">Введите ID задания, чтобы сделать его VIP (поднять в топ и выдать приоритет).</p>
+            
+            <div>
+                <label class="text-[11px] font-semibold text-gray-700 block mb-1">ID задания для VIP:</label>
+                <input type="number" id="adminTaskId" placeholder="Напр: 5" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <button onclick="makeTaskVipByAdmin()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs py-3 rounded-xl shadow-md transition">
+                ⭐ Сделать заказ VIP
+            </button>
         </div>
     </div>
 
@@ -309,7 +336,7 @@
                 respondBtn: "Откликнуться / Связаться",
                 reportBtn: "📸 Сдать работу (Фотоотчет)",
                 statusPending: "⏳ На проверке по фото",
-                statusDone: "✅ Работа выполнена и оплачена",
+                vipTaskBadge: "👑 VIP-ЗАКАЗ (ПРИОРИТЕТ)",
                 prepayLabel: "🔒 С предоплатой (Гарантия 5%)"
             },
             ro: {
@@ -328,7 +355,7 @@
                 respondBtn: "Aplicați / Contactează",
                 reportBtn: "📸 Predă lucrarea (Raport foto)",
                 statusPending: "⏳ În verificare foto",
-                statusDone: "✅ Finalizat și achitat",
+                vipTaskBadge: "👑 COMANDĂ VIP (PRIORITATE)",
                 prepayLabel: "🔒 Cu avans (Garanție 5%)"
             },
             en: {
@@ -347,7 +374,7 @@
                 respondBtn: "Apply / Contact client",
                 reportBtn: "📸 Submit Work (Photo Report)",
                 statusPending: "⏳ Under Photo Review",
-                statusDone: "✅ Completed & Paid",
+                vipTaskBadge: "👑 VIP TASK (PRIORITY)",
                 prepayLabel: "🔒 Prepayment (5% Guarantee)"
             },
             it: {
@@ -366,7 +393,7 @@
                 respondBtn: "Candidati / Contatta",
                 reportBtn: "📸 Consegna Lavoro (Foto)",
                 statusPending: "⏳ In Verifica Foto",
-                statusDone: "✅ Completato e Pagato",
+                vipTaskBadge: "👑 ORDINE VIP (PRIORITÀ)",
                 prepayLabel: "🔒 Con acconto (Garanzia 5%)"
             }
         };
@@ -416,6 +443,9 @@
         function closeCreateModal() { document.getElementById('createModal').classList.add('hidden'); }
         function closeContactModal() { document.getElementById('contactModal').classList.add('hidden'); }
 
+        function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); }
+        function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
+
         function openReportModal(taskId) {
             document.getElementById('reportTaskId').value = taskId;
             document.getElementById('reportModal').classList.remove('hidden');
@@ -443,6 +473,29 @@
             closeVipModal();
         }
 
+        async function makeTaskVipByAdmin() {
+            const taskId = document.getElementById('adminTaskId').value;
+            if (!taskId) { alert("Введите ID задания!"); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('tasks')
+                    .update({ is_vip: true })
+                    .eq('id', taskId);
+
+                if (error) {
+                    alert("Ошибка: " + error.message);
+                } else {
+                    alert(`Задание №${taskId} успешно переведено в статус VIP!`);
+                    closeAdminModal();
+                    document.getElementById('adminTaskId').value = '';
+                    fetchTasks();
+                }
+            } catch (err) {
+                alert("Ошибка: " + err.message);
+            }
+        }
+
         function renderTasks(tasks) {
             const container = document.getElementById('tasks-container');
             const currentLang = languages[langIndex];
@@ -453,24 +506,35 @@
                 return;
             }
 
+            // Сортируем: сначала VIP-заказы
+            tasks.sort((a, b) => (b.is_vip === true) - (a.is_vip === true));
+
             container.innerHTML = tasks.map(task => {
                 const contact = task.contact || task.username || '@profitum_support';
                 const hasPrepay = task.prepay || task.is_prepay;
+                const isVip = task.is_vip;
                 const imageUrl = task.image_url;
                 const reportUrl = task.report_image_url;
-                const status = task.status || 'active';
 
                 return `
-                <div class="bg-white/95 backdrop-blur-sm border border-gray-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition space-y-3 relative overflow-hidden">
-                    ${hasPrepay ? `<div class="absolute top-0 right-0 bg-amber-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-bl-xl shadow-sm">${t.prepayLabel}</div>` : ''}
+                <div class="bg-white/95 backdrop-blur-sm border ${isVip ? 'border-amber-400 ring-2 ring-amber-400/20 shadow-md' : 'border-gray-100'} p-4 rounded-2xl shadow-sm hover:shadow-md transition space-y-3 relative overflow-hidden">
+                    ${isVip ? `
+                    <div class="absolute top-0 left-0 bg-amber-500 text-white text-[9px] font-bold px-3 py-0.5 rounded-br-xl shadow-sm">
+                        ${t.vipTaskBadge} (ID: ${task.id})
+                    </div>` : `
+                    <div class="absolute top-2 right-3 text-[10px] text-gray-300 font-mono">ID: ${task.id}</div>`}
+
+                    ${hasPrepay && !isVip ? `
+                    <div class="absolute top-0 right-0 bg-amber-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-bl-xl shadow-sm">
+                        ${t.prepayLabel}
+                    </div>` : ''}
                     
-                    <div class="flex justify-between items-start pr-12">
+                    <div class="flex justify-between items-start pr-12 ${isVip ? 'pt-3' : ''}">
                         <h3 class="font-bold text-sm text-gray-900 leading-snug">${task.title || 'Задание'}</h3>
                         <span class="text-emerald-600 font-bold text-sm bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-100 whitespace-nowrap">${task.price || 0} MDL</span>
                     </div>
                     <p class="text-xs text-gray-600 leading-relaxed">${task.desc || task.description || ''}</p>
                     
-                    <!-- Фото задачи от заказчика -->
                     ${imageUrl ? `
                     <div class="space-y-1">
                         <span class="text-[10px] text-gray-400 font-medium block">📷 Фото объекта:</span>
@@ -479,7 +543,6 @@
                         </div>
                     </div>` : ''}
 
-                    <!-- Фотоотчет мастера (если отправлен) -->
                     ${reportUrl ? `
                     <div class="space-y-1 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
                         <span class="text-[10px] text-amber-800 font-bold block">${t.statusPending}</span>
@@ -548,6 +611,7 @@
             } catch (err) { allTasks = []; renderTasks([]); }
         }
 
+        // Создание задания с прямой загрузкой фото через fetch (обход JWS)
         async function handleCreateTask(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -561,11 +625,27 @@
             try {
                 if (fileInput.files && fileInput.files[0]) {
                     const file = fileInput.files[0];
-                    const fileName = `task_${Date.now()}_${file.name}`;
-                    const { error: uploadError } = await supabaseClient.storage.from('task-photos').upload(fileName, file);
-                    if (uploadError) { alert("Ошибка загрузки фото: " + uploadError.message); btn.innerText = originalText; btn.disabled = false; return; }
-                    const { data: publicUrlData } = supabaseClient.storage.from('task-photos').getPublicUrl(fileName);
-                    imageUrl = publicUrlData.publicUrl;
+                    const fileName = `task_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                    
+                    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/task-photos/${fileName}`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': file.type || 'image/jpeg'
+                        },
+                        body: file
+                    });
+
+                    if (!uploadRes.ok) {
+                        const errText = await uploadRes.text();
+                        alert("Ошибка загрузки фото: " + errText);
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                        return;
+                    }
+
+                    imageUrl = `${SUPABASE_URL}/storage/v1/object/public/task-photos/${fileName}`;
                 }
 
                 const newTask = {
@@ -577,7 +657,8 @@
                     desc: document.getElementById('taskDesc').value,
                     prepay: document.getElementById('taskPrepay').checked,
                     image_url: imageUrl,
-                    status: 'active'
+                    status: 'active',
+                    is_vip: false
                 };
 
                 const { error } = await supabaseClient.from('tasks').insert([newTask]);
@@ -587,6 +668,7 @@
             finally { btn.innerText = originalText; btn.disabled = false; }
         }
 
+        // Отправка фотоотчета мастера через прямой fetch
         async function submitTaskReport() {
             const taskId = document.getElementById('reportTaskId').value;
             const fileInput = document.getElementById('reportPhotoFile');
@@ -602,13 +684,26 @@
 
             try {
                 const file = fileInput.files[0];
-                const fileName = `report_${Date.now()}_${file.name}`;
-                const { error: uploadError } = await supabaseClient.storage.from('task-photos').upload(fileName, file);
+                const fileName = `report_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
                 
-                if (uploadError) { alert("Ошибка загрузки: " + uploadError.message); btn.disabled = false; return; }
+                const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/task-photos/${fileName}`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': file.type || 'image/jpeg'
+                    },
+                    body: file
+                });
 
-                const { data: publicUrlData } = supabaseClient.storage.from('task-photos').getPublicUrl(fileName);
-                const reportUrl = publicUrlData.publicUrl;
+                if (!uploadRes.ok) {
+                    const errText = await uploadRes.text();
+                    alert("Ошибка загрузки отчета: " + errText);
+                    btn.disabled = false;
+                    return;
+                }
+
+                const reportUrl = `${SUPABASE_URL}/storage/v1/object/public/task-photos/${fileName}`;
 
                 const { error: updateError } = await supabaseClient
                     .from('tasks')
@@ -619,7 +714,7 @@
                 else {
                     closeReportModal();
                     document.getElementById('reportPhotoFile').value = '';
-                    alert("Фотоотчет успешно отправлен! Заказчик и администрация могут проверить его для выплаты.");
+                    alert("Фотоотчет успешно отправлен!");
                     fetchTasks();
                 }
             } catch (err) {
