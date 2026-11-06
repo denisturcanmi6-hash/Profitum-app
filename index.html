@@ -288,7 +288,6 @@
     <!-- Скрипты -->
     <script>
         const SUPABASE_URL = "https://xudwyqmpucmqgjjpbgll.supabase.co";
-        // Вставлен ваш реальный anon/public JWT ключ
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1ZHd5cW1wdWNtcWdqanBiZ2xsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM5NDQxNjEsImV4cCI6MjEwOTUyMDE2MX0.jikKhrQIIl7gboOV1yZzYmpflSrZZbH0Z8_ZzkjtLkA";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -364,7 +363,7 @@
                 searchPlaceholder: "Cerca compiti...",
                 optAllChisinau: "🏙️ Chisinau (Tutti)",
                 optAllMoldova: "🗺️ Moldova (Regioni)",
-                lblCatTitle: "Servizi populari a Chisinau:",
+                lblCatTitle: "Servizi popolari a Chisinau:",
                 catAll: "Tutti",
                 createBtn: "+ Crea",
                 noTasks: "Nessun compito attivo",
@@ -375,7 +374,6 @@
             }
         };
 
-        // Функция мягкого звукового сигнала оповещения о новом заказе
         function playNotificationSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -530,7 +528,7 @@
             tasks.sort((a, b) => (b.is_vip === true) - (a.is_vip === true));
 
             container.innerHTML = tasks.map(task => {
-                const contact = task.contact || task.username || '@profitum_support';
+                const contact = task.username || task.contact || '@profitum_support';
                 const hasPrepay = task.prepay || task.is_prepay;
                 const isVip = task.is_vip;
 
@@ -629,7 +627,7 @@
                     title: document.getElementById('taskTitle').value,
                     price: parseFloat(document.getElementById('taskPrice').value),
                     district: document.getElementById('taskSector').value,
-                    contact: document.getElementById('taskContact').value,
+                    username: document.getElementById('taskContact').value, // Отправляем в колонку username
                     category: document.getElementById('taskCategory').value,
                     desc: document.getElementById('taskDesc').value,
                     prepay: document.getElementById('taskPrepay').checked,
