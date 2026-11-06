@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -143,6 +143,24 @@
                 </div>
             </div>
 
+            <!-- Контакты и мессенджеры -->
+            <div class="bg-gray-50 p-4 rounded-xl border space-y-3">
+                <h3 class="font-bold text-gray-800 text-sm" data-i18n="contactsHeader">Ваши контакты для связи</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-600 uppercase mb-1" data-i18n="labelPhone">Телефон (+373...)</label>
+                        <input type="text" id="user-phone" placeholder="+37360123456" class="w-full border rounded-lg px-3 py-2 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-600 uppercase mb-1">WhatsApp / Viber</label>
+                        <input type="text" id="user-whatsapp" placeholder="+373..." class="w-full border rounded-lg px-3 py-2 text-xs bg-white">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="saveUserContacts()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-lg transition" data-i18n="saveContactsBtn">Сохранить контакты</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-2">
                     <h3 class="font-bold text-emerald-900 text-sm" data-i18n="mySubTitle">Ваш PRO-статус</h3>
@@ -166,7 +184,7 @@
     </section>
 </main>
 
-<!-- Модальное окно создания задания (с фото) -->
+<!-- Модальное окно создания задания -->
 <div id="modal-create" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
         <div class="bg-gray-50 border-b px-6 py-4 flex justify-between items-center">
@@ -206,7 +224,7 @@
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-700 uppercase mb-1" data-i18n="labelDesc">Подробное описание и фото (ссылка)</label>
-                <textarea id="task-desc" rows="3" required placeholder="Укажите детали и приложите ссылку на фото..." class="w-full border rounded-lg px-3 py-2 text-sm mb-2"></textarea>
+                <textarea id="task-desc" rows="3" required placeholder="Укажите детали..." class="w-full border rounded-lg px-3 py-2 text-sm mb-2"></textarea>
                 <input type="url" id="task-image" placeholder="URL фото работы (необязательно)" class="w-full border rounded-lg px-3 py-2 text-xs">
             </div>
             <div class="pt-2 flex justify-end space-x-3 border-t">
@@ -250,7 +268,9 @@
     const currentUser = {
         id: tgUser ? tgUser.id : 'demo_user_' + Math.floor(Math.random() * 1000),
         name: tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : 'Гость PROFITUM',
-        username: tgUser?.username ? '@' + tgUser.username : '@guest'
+        username: tgUser?.username ? '@' + tgUser.username : '@guest',
+        phone: localStorage.getItem('profitum_phone') || '',
+        whatsapp: localStorage.getItem('profitum_wa') || ''
     };
 
     const SUPABASE_URL = 'https://sbrfqvudthjjbujhblnd.supabase.co';
@@ -299,6 +319,12 @@
             myTasksCount: "Ваших заданий:",
             myTasksHeader: "Мои размещенные задания",
             noUserTasks: "У вас пока нет активных заданий.",
+            contactsHeader: "Ваши контакты для связи",
+            labelPhone: "Телефон (+373...)",
+            saveContactsBtn: "Сохранить контакты",
+            contactWhatsApp: "WhatsApp",
+            contactViber: "Viber",
+            contactTelegram: "Telegram",
             districts: ["Все секторы", "Центр (Centru)", "Рышкановка (Râșcani)", "Ботаника (Botanica)", "Чеканы (Ciocana)", "Буюканы (Buiucani)"]
         },
         ro: {
@@ -338,6 +364,12 @@
             myTasksCount: "Sarcinile tale:",
             myTasksHeader: "Sarcinile mele publicate",
             noUserTasks: "Nu ai nicio sarcină activă momentan.",
+            contactsHeader: "Datele de contact",
+            labelPhone: "Telefon (+373...)",
+            saveContactsBtn: "Salvează contactele",
+            contactWhatsApp: "WhatsApp",
+            contactViber: "Viber",
+            contactTelegram: "Telegram",
             districts: ["Toate sectoarele", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         },
         en: {
@@ -377,6 +409,12 @@
             myTasksCount: "Your tasks:",
             myTasksHeader: "My Posted Tasks",
             noUserTasks: "You have no active tasks yet.",
+            contactsHeader: "Your contact info",
+            labelPhone: "Phone (+373...)",
+            saveContactsBtn: "Save Contacts",
+            contactWhatsApp: "WhatsApp",
+            contactViber: "Viber",
+            contactTelegram: "Telegram",
             districts: ["All districts", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         },
         it: {
@@ -416,6 +454,12 @@
             myTasksCount: "I tuoi compiti:",
             myTasksHeader: "I miei compiti pubblicati",
             noUserTasks: "Non hai ancora compiti attivi.",
+            contactsHeader: "I tuoi contatti",
+            labelPhone: "Telefono (+373...)",
+            saveContactsBtn: "Salva contatti",
+            contactWhatsApp: "WhatsApp",
+            contactViber: "Viber",
+            contactTelegram: "Telegram",
             districts: ["Tutti i quartieri", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         }
     };
@@ -469,8 +513,8 @@
     }
 
     const localExecutors = [
-        { id: 1, name: 'Игорь Мельник', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80', role: 'Электрик, Сантехник', rating: '4.9', reviews: 42, district: 'Рышкановка', isPro: true },
-        { id: 2, name: 'Елена Кожокару', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80', role: 'Клининг', rating: '5.0', reviews: 89, district: 'Центр', isPro: true }
+        { id: 1, name: 'Игорь Мельник', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80', role: 'Электрик, Сантехник', rating: '4.9', reviews: 42, district: 'Рышкановка', phone: '+37360111222', isPro: true },
+        { id: 2, name: 'Елена Кожокару', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80', role: 'Клининг', rating: '5.0', reviews: 89, district: 'Центр', phone: '+37368333444', isPro: true }
     ];
 
     function switchTab(tab) {
@@ -488,20 +532,27 @@
 
     function renderExecutors() {
         const container = document.getElementById('executors-container');
+        const t = translations[currentLang];
         if (!container) return;
         container.innerHTML = localExecutors.map(e => `
-            <div class="bg-white/90 backdrop-blur-sm p-4 rounded-xl border border-gray-100 shadow-sm flex items-center space-x-4">
-                <img src="${e.avatar}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500">
-                <div>
-                    <div class="flex items-center space-x-2">
-                        <h4 class="font-bold text-gray-900">${e.name}</h4>
-                        ${e.isPro ? '<span class="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">PRO</span>' : ''}
+            <div class="bg-white/90 backdrop-blur-sm p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <img src="${e.avatar}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h4 class="font-bold text-gray-900">${e.name}</h4>
+                            ${e.isPro ? '<span class="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">PRO</span>' : ''}
+                        </div>
+                        <p class="text-xs text-gray-600">${e.role}</p>
+                        <div class="flex items-center space-x-3 mt-1 text-xs text-gray-500">
+                            <span>⭐ ${e.rating} (${e.reviews})</span>
+                            <span>📍 ${e.district}</span>
+                        </div>
                     </div>
-                    <p class="text-xs text-gray-600">${e.role}</p>
-                    <div class="flex items-center space-x-3 mt-1 text-xs text-gray-500">
-                        <span>⭐ ${e.rating} (${e.reviews})</span>
-                        <span>📍 ${e.district}</span>
-                    </div>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <a href="tel:${e.phone}" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg text-center font-medium hover:bg-emerald-700"><i class="fa-solid fa-phone mr-1"></i>${e.phone}</a>
+                    <a href="https://wa.me/${e.phone.replace('+', '')}" target="_blank" class="bg-emerald-50 text-emerald-700 border border-emerald-300 text-xs px-3 py-1 rounded-lg text-center font-medium hover:bg-emerald-100"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a>
                 </div>
             </div>
         `).join('');
@@ -538,7 +589,10 @@
                 ${item.image ? `<img src="${item.image}" class="w-full h-40 object-cover rounded-lg border mt-2">` : ''}
                 <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
                     <span><i class="fa-solid fa-location-dot mr-1"></i>${item.district}</span>
-                    <button onclick="openPayModal('${item.id}', '${item.title}', ${item.price})" class="bg-emerald-600 text-white px-3 py-1.5 rounded font-medium hover:bg-emerald-700">${t.payBtnText}</button>
+                    <div class="flex gap-2">
+                        ${currentUser.phone ? `<a href="https://wa.me/${currentUser.phone.replace('+', '')}" target="_blank" class="bg-emerald-50 text-emerald-700 px-2.5 py-1.5 rounded font-medium border border-emerald-200"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a>` : ''}
+                        <button onclick="openPayModal('${item.id}', '${item.title}', ${item.price})" class="bg-emerald-600 text-white px-3 py-1.5 rounded font-medium hover:bg-emerald-700">${t.payBtnText}</button>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -548,6 +602,9 @@
         document.getElementById('profile-name').textContent = currentUser.name;
         document.getElementById('profile-telegram-id').textContent = 'Telegram ID: ' + currentUser.id + ' (' + currentUser.username + ')';
         document.getElementById('user-avatar-initials').textContent = currentUser.name.charAt(0).toUpperCase();
+
+        document.getElementById('user-phone').value = currentUser.phone;
+        document.getElementById('user-whatsapp').value = currentUser.whatsapp;
 
         const userTasks = tasksList.filter(item => item.user_id == currentUser.id);
         document.getElementById('user-tasks-count').textContent = userTasks.length;
@@ -569,6 +626,14 @@
                 <span class="bg-emerald-100 text-emerald-800 font-semibold px-2 py-1 rounded">Активно</span>
             </div>
         `).join('');
+    }
+
+    function saveUserContacts() {
+        currentUser.phone = document.getElementById('user-phone').value;
+        currentUser.whatsapp = document.getElementById('user-whatsapp').value;
+        localStorage.setItem('profitum_phone', currentUser.phone);
+        localStorage.setItem('profitum_wa', currentUser.whatsapp);
+        alert('Контакты успешно сохранены!');
     }
 
     function openCreateModal() { document.getElementById('modal-create').classList.remove('hidden'); }
