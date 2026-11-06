@@ -1,3 +1,4 @@
+<script>
     // --- НАСТРОЙКА SUPABASE ---
     const SUPABASE_URL = "https://xudwyqmpucmqgjjpbgll.supabase.co";
     const SUPABASE_ANON_KEY = "Sb_publishable_dxJStXW9jVQ4XUZE_J5Umw_jNr2Vw8h";
@@ -20,7 +21,6 @@
 
             if (error) {
                 console.error("Ошибка Supabase:", error);
-                // Если таблицы нет или ошибка прав, показываем пустой список вместо ошибки
                 tasksList = [];
                 renderTasks(tasksList);
                 return;
@@ -34,3 +34,7 @@
             renderTasks(tasksList);
         }
     }
+
+    // Запускаем загрузку задач при открытии страницы
+    fetchTasks();
+</script>
