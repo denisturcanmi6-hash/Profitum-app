@@ -1,0 +1,20 @@
+function renderExecutors() {
+    const container = document.getElementById('executors-container');
+    if (!container) return;
+    container.innerHTML = localExecutors.map(e => `
+        <div class="bg-white/90 backdrop-blur-sm p-4 rounded-xl border border-gray-100 shadow-sm flex items-center space-x-4">
+            <img src="${e.avatar}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500">
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h4 class="font-bold text-gray-900">${e.name}</h4>
+                    ${e.isPro ? '<span class="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">PRO</span>' : ''}
+                </div>
+                <p class="text-xs text-gray-600">${e.role}</p>
+                <div class="flex items-center space-x-3 mt-1 text-xs text-gray-500">
+                    <span>⭐ ${e.rating} (${e.reviews})</span>
+                    <span>📍 ${e.district}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
