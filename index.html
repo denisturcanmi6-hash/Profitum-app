@@ -755,10 +755,6 @@
         }
 
         fetchTasks();
-    </script>
-</body>
-</html>
-<script>
 // 1. Получаем данные текущего пользователя из Telegram WebApp
 const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
@@ -804,4 +800,25 @@ async function autofillTaskForm() {
         }
     }
 }
+ // Подставляем username в поле ввода
+    const usernameInput = document.getElementById('username'); 
+    if (usernameInput) {
+        usernameInput.value = tgUser.username ? `@${tgUser.username}` : tgUser.first_name;
+    }
+
+    // Подтягиваем сохраненный телефон из базы profiles
+    const { data } = await supabase
+        .from('profiles')
+        .select('phone')
+        .eq('telegram_id', tgUser.id)
+        .single();
+
+    if (data && data.phone) {
+        const phoneInput = document.getElementById('phone'); 
+        if (phoneInput) {
+            phoneInput.value = data.phone;
+        }
+    }
 </script>
+</body>
+</html>
