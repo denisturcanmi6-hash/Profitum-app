@@ -40,7 +40,7 @@
             </div>
             <div>
                 <span class="font-black text-lg tracking-wider text-gray-900">PROFIT<span class="text-emerald-600">UM</span></span>
-                <span id="tg-user-badge" class="block text-[10px] text-emerald-800 font-semibold">Кишинев 🇲🇩</span>
+                <span id="tg-user-badge" class="block text-[10px] text-emerald-800 font-semibold">PROFITUM</span>
             </div>
         </div>
 
@@ -209,9 +209,6 @@
     const tg = window.Telegram?.WebApp;
     if (tg) {
         tg.expand();
-        if (tg.initDataUnsafe?.user) {
-            document.getElementById('tg-user-badge').textContent = `👤 ${tg.initDataUnsafe.user.first_name || 'User'}`;
-        }
     }
 
     const SUPABASE_URL = 'https://sbrfqvudthjjbujhblnd.supabase.co';
@@ -301,7 +298,7 @@
             category: document.getElementById('task-category').value,
             district: document.getElementById('task-district').value,
             price: Number(document.getElementById('task-price').value),
-            desc: document.getElementById('task-desc').value
+            desc: document.getElementById('task-desc'].value
         };
         if (supabaseClient) {
             await supabaseClient.from('tasks').insert([newTask]);
@@ -323,6 +320,5 @@
 
     fetchTasks();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
