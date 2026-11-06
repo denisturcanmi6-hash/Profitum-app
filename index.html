@@ -48,6 +48,7 @@
             <nav class="hidden md:flex space-x-4 font-medium text-sm mr-2">
                 <button onclick="switchTab('tasks')" id="nav-tasks" class="text-emerald-600 border-b-2 border-emerald-600 pb-1 font-semibold" data-i18n="navTasks">Все задания</button>
                 <button onclick="switchTab('executors')" id="nav-executors" class="text-gray-500 hover:text-emerald-600 pb-1" data-i18n="navExecutors">Исполнители</button>
+                <button onclick="switchTab('profile')" id="nav-profile" class="text-gray-500 hover:text-emerald-600 pb-1" data-i18n="navProfile">Кабинет</button>
             </nav>
 
             <select id="lang-switcher" onchange="changeLanguage(this.value)" class="bg-gray-100 border border-gray-200 text-gray-700 text-xs font-bold rounded-lg px-2 py-1.5 focus:outline-none cursor-pointer">
@@ -66,6 +67,7 @@
 
 <!-- Main Content -->
 <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full relative z-10">
+    <!-- SECTION: TASKS -->
     <section id="section-tasks" class="space-y-6">
         <div class="bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-3">
             <div class="relative flex-grow">
@@ -115,7 +117,7 @@
                         <h4 class="font-bold text-gray-900 text-sm" data-i18n="proTitle">Вы мастер в Кишиневе?</h4>
                     </div>
                     <p class="text-xs text-gray-600" data-i18n="proDesc">Подключите PRO-аккаунт (199 MDL), чтобы быть в топе и получать больше заказов!</p>
-                    <button onclick="openPayModal('PRO', 'PRO-аккаунт', 199, false)" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 rounded-lg text-xs transition" data-i18n="proBtn">
+                    <button onclick="openPayModal('PRO', 'PRO-аккаунт', 199)" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 rounded-lg text-xs transition" data-i18n="proBtn">
                         Подключить PRO (Crypto)
                     </button>
                 </div>
@@ -128,9 +130,43 @@
         <h2 class="text-xl font-bold text-gray-900" data-i18n="executorsHeader">Проверенные исполнители в Кишиневе</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="executors-container"></div>
     </section>
+
+    <!-- SECTION: PROFILE -->
+    <section id="section-profile" class="hidden space-y-6">
+        <div class="bg-white/90 backdrop-blur-sm p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
+            <div class="flex items-center space-x-4 border-b pb-4">
+                <div class="bg-emerald-100 text-emerald-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold" id="user-avatar-initials">P</div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900" id="profile-name">Загрузка...</h2>
+                    <p class="text-xs text-gray-500" id="profile-telegram-id">Telegram ID: ...</p>
+                    <span id="profile-badge" class="inline-block mt-1 bg-gray-100 text-gray-700 text-xs font-bold px-2 py-0.5 rounded">Стандартный аккаунт</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl space-y-2">
+                    <h3 class="font-bold text-emerald-900 text-sm" data-i18n="mySubTitle">Ваш PRO-статус</h3>
+                    <p class="text-xs text-emerald-700" data-i18n="mySubDesc">Получайте больше заказов и приоритет в поисковой выдаче.</p>
+                    <button onclick="openPayModal('PRO', 'PRO-аккаунт', 199)" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-2 rounded-lg transition" data-i18n="proBtn">Подключить PRO (Crypto)</button>
+                </div>
+                <div class="bg-gray-50 border p-4 rounded-xl space-y-2">
+                    <h3 class="font-bold text-gray-800 text-sm" data-i18n="myStatsTitle">Статистика профиля</h3>
+                    <p class="text-xs text-gray-600"><span data-i18n="myTasksCount">Ваших заданий:</span> <span id="user-tasks-count" class="font-bold">0</span></p>
+                    <p class="text-xs text-gray-600">⭐ Рейтинг: <span class="font-bold text-amber-600">5.0 (0 отзывов)</span></p>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-gray-900 text-base mb-3" data-i18n="myTasksHeader">Мои размещенные задания</h3>
+                <div id="user-tasks-container" class="space-y-3">
+                    <p class="text-xs text-gray-500" data-i18n="noUserTasks">У вас пока нет активных заданий.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 
-<!-- Модальное окно создания -->
+<!-- Модальное окно создания задания (с фото) -->
 <div id="modal-create" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
         <div class="bg-gray-50 border-b px-6 py-4 flex justify-between items-center">
@@ -169,8 +205,9 @@
                 <input type="number" id="task-price" min="50" step="50" required placeholder="500" class="w-full border rounded-lg px-3 py-2 text-sm">
             </div>
             <div>
-                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1" data-i18n="labelDesc">Подробное описание</label>
-                <textarea id="task-desc" rows="3" required placeholder="Укажите детали..." class="w-full border rounded-lg px-3 py-2 text-sm"></textarea>
+                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1" data-i18n="labelDesc">Подробное описание и фото (ссылка)</label>
+                <textarea id="task-desc" rows="3" required placeholder="Укажите детали и приложите ссылку на фото..." class="w-full border rounded-lg px-3 py-2 text-sm mb-2"></textarea>
+                <input type="url" id="task-image" placeholder="URL фото работы (необязательно)" class="w-full border rounded-lg px-3 py-2 text-xs">
             </div>
             <div class="pt-2 flex justify-end space-x-3 border-t">
                 <button type="button" onclick="closeCreateModal()" class="px-4 py-2 border rounded-lg text-sm font-medium text-gray-600" data-i18n="cancelBtn">Отмена</button>
@@ -209,6 +246,13 @@
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.expand(); }
 
+    const tgUser = tg?.initDataUnsafe?.user;
+    const currentUser = {
+        id: tgUser ? tgUser.id : 'demo_user_' + Math.floor(Math.random() * 1000),
+        name: tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : 'Гость PROFITUM',
+        username: tgUser?.username ? '@' + tgUser.username : '@guest'
+    };
+
     const SUPABASE_URL = 'https://sbrfqvudthjjbujhblnd.supabase.co';
     const SUPABASE_KEY = 'Sb_publishable_Yo9sq0He3nKiBTcWWmoVAg_QYnjjqH9';
     let supabaseClient = null;
@@ -221,6 +265,7 @@
         ru: {
             navTasks: "Все задания",
             navExecutors: "Исполнители",
+            navProfile: "Кабинет",
             createBtn: "Создать",
             searchPlaceholder: "Поиск по заданиям...",
             allDistricts: "Все секторы",
@@ -248,11 +293,18 @@
             confirmBtn: "Подтвердить перевод",
             payBtnText: "Оплатить сделку",
             noTasks: "Заданий пока нет. Создайте первое!",
+            mySubTitle: "Ваш PRO-статус",
+            mySubDesc: "Получайте больше заказов и приоритет в поисковой выдаче.",
+            myStatsTitle: "Статистика профиля",
+            myTasksCount: "Ваших заданий:",
+            myTasksHeader: "Мои размещенные задания",
+            noUserTasks: "У вас пока нет активных заданий.",
             districts: ["Все секторы", "Центр (Centru)", "Рышкановка (Râșcani)", "Ботаника (Botanica)", "Чеканы (Ciocana)", "Буюканы (Buiucani)"]
         },
         ro: {
             navTasks: "Toate sarcinile",
             navExecutors: "Executanți",
+            navProfile: "Cabinet",
             createBtn: "Creează",
             searchPlaceholder: "Caută sarcini...",
             allDistricts: "Toate sectoarele",
@@ -280,11 +332,18 @@
             confirmBtn: "Confirmă transferul",
             payBtnText: "Achită tranzacția",
             noTasks: "Nu există sarcini încă. Creează prima!",
+            mySubTitle: "Statutul tău PRO",
+            mySubDesc: "Primește mai multe comenzi și prioritate în căutare.",
+            myStatsTitle: "Statistica profilului",
+            myTasksCount: "Sarcinile tale:",
+            myTasksHeader: "Sarcinile mele publicate",
+            noUserTasks: "Nu ai nicio sarcină activă momentan.",
             districts: ["Toate sectoarele", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         },
         en: {
             navTasks: "All Tasks",
             navExecutors: "Executors",
+            navProfile: "Cabinet",
             createBtn: "Create",
             searchPlaceholder: "Search tasks...",
             allDistricts: "All districts",
@@ -312,11 +371,18 @@
             confirmBtn: "Confirm Transfer",
             payBtnText: "Pay Escrow",
             noTasks: "No tasks yet. Create the first one!",
+            mySubTitle: "Your PRO Status",
+            mySubDesc: "Get more orders and priority ranking.",
+            myStatsTitle: "Profile Stats",
+            myTasksCount: "Your tasks:",
+            myTasksHeader: "My Posted Tasks",
+            noUserTasks: "You have no active tasks yet.",
             districts: ["All districts", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         },
         it: {
             navTasks: "Tutti i compiti",
             navExecutors: "Esecutori",
+            navProfile: "Profilo",
             createBtn: "Crea",
             searchPlaceholder: "Cerca compiti...",
             allDistricts: "Tutti i quartieri",
@@ -344,6 +410,12 @@
             confirmBtn: "Conferma bonifico",
             payBtnText: "Paga transazione",
             noTasks: "Nessun compito ancora. Crea il primo!",
+            mySubTitle: "Il tuo stato PRO",
+            mySubDesc: "Ottieni più ordini e priorità nei risultati.",
+            myStatsTitle: "Statistiche profilo",
+            myTasksCount: "I tuoi compiti:",
+            myTasksHeader: "I miei compiti pubblicati",
+            noUserTasks: "Non hai ancora compiti attivi.",
             districts: ["Tutti i quartieri", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         }
     };
@@ -390,6 +462,7 @@
         }
 
         renderTasks(tasksList);
+        renderUserProfile();
         if (!document.getElementById('section-executors').classList.contains('hidden')) {
             renderExecutors();
         }
@@ -403,9 +476,14 @@
     function switchTab(tab) {
         document.getElementById('section-tasks').classList.toggle('hidden', tab !== 'tasks');
         document.getElementById('section-executors').classList.toggle('hidden', tab !== 'executors');
+        document.getElementById('section-profile').classList.toggle('hidden', tab !== 'profile');
+
         document.getElementById('nav-tasks').className = tab === 'tasks' ? 'text-emerald-600 border-b-2 border-emerald-600 pb-1 font-semibold' : 'text-gray-500 hover:text-emerald-600 pb-1';
         document.getElementById('nav-executors').className = tab === 'executors' ? 'text-emerald-600 border-b-2 border-emerald-600 pb-1 font-semibold' : 'text-gray-500 hover:text-emerald-600 pb-1';
+        document.getElementById('nav-profile').className = tab === 'profile' ? 'text-emerald-600 border-b-2 border-emerald-600 pb-1 font-semibold' : 'text-gray-500 hover:text-emerald-600 pb-1';
+
         if (tab === 'executors') renderExecutors();
+        if (tab === 'profile') renderUserProfile();
     }
 
     function renderExecutors() {
@@ -432,7 +510,7 @@
     async function fetchTasks() {
         if (supabaseClient) {
             const { data, error } = await supabaseClient.from('tasks').select('*').order('created_at', { ascending: false });
-            if (!error && data) { tasksList = data; renderTasks(tasksList); return; }
+            if (!error && data) { tasksList = data; renderTasks(tasksList); renderUserProfile(); return; }
         }
         renderTasks([]);
     }
@@ -457,10 +535,38 @@
                     </div>
                 </div>
                 <p class="text-gray-600 text-sm">${item.desc}</p>
+                ${item.image ? `<img src="${item.image}" class="w-full h-40 object-cover rounded-lg border mt-2">` : ''}
                 <div class="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
                     <span><i class="fa-solid fa-location-dot mr-1"></i>${item.district}</span>
                     <button onclick="openPayModal('${item.id}', '${item.title}', ${item.price})" class="bg-emerald-600 text-white px-3 py-1.5 rounded font-medium hover:bg-emerald-700">${t.payBtnText}</button>
                 </div>
+            </div>
+        `).join('');
+    }
+
+    function renderUserProfile() {
+        document.getElementById('profile-name').textContent = currentUser.name;
+        document.getElementById('profile-telegram-id').textContent = 'Telegram ID: ' + currentUser.id + ' (' + currentUser.username + ')';
+        document.getElementById('user-avatar-initials').textContent = currentUser.name.charAt(0).toUpperCase();
+
+        const userTasks = tasksList.filter(item => item.user_id == currentUser.id);
+        document.getElementById('user-tasks-count').textContent = userTasks.length;
+
+        const container = document.getElementById('user-tasks-container');
+        const t = translations[currentLang];
+
+        if (userTasks.length === 0) {
+            container.innerHTML = `<p class="text-xs text-gray-500">${t.noUserTasks}</p>`;
+            return;
+        }
+
+        container.innerHTML = userTasks.map(item => `
+            <div class="bg-gray-50 p-3 rounded-lg border flex justify-between items-center text-xs">
+                <div>
+                    <span class="font-bold text-gray-900 block">${item.title}</span>
+                    <span class="text-gray-500">${item.district} • ${item.price} MDL</span>
+                </div>
+                <span class="bg-emerald-100 text-emerald-800 font-semibold px-2 py-1 rounded">Активно</span>
             </div>
         `).join('');
     }
@@ -475,7 +581,9 @@
             category: document.getElementById('task-category').value,
             district: document.getElementById('task-district').value,
             price: Number(document.getElementById('task-price').value),
-            desc: document.getElementById('task-desc').value
+            desc: document.getElementById('task-desc').value,
+            image: document.getElementById('task-image').value,
+            user_id: currentUser.id
         };
         if (supabaseClient) {
             await supabaseClient.from('tasks').insert([newTask]);
