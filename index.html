@@ -288,7 +288,8 @@
     <!-- Скрипты -->
     <script>
         const SUPABASE_URL = "https://xudwyqmpucmqgjjpbgll.supabase.co";
-        const SUPABASE_ANON_KEY = "Sb_publishable_dxJStXW9jVQ4XUZE_J5Umw_jNr2Vw8h";
+        // Вставлен ваш реальный anon/public JWT ключ
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1ZHd5cW1wdWNtcWdqanBiZ2xsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM5NDQxNjEsImV4cCI6MjEwOTUyMDE2MX0.jikKhrQIIl7gboOV1yZzYmpflSrZZbH0Z8_ZzkjtLkA";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const tg = window.Telegram?.WebApp;
@@ -363,7 +364,7 @@
                 searchPlaceholder: "Cerca compiti...",
                 optAllChisinau: "🏙️ Chisinau (Tutti)",
                 optAllMoldova: "🗺️ Moldova (Regioni)",
-                lblCatTitle: "Servizi popolari a Chisinau:",
+                lblCatTitle: "Servizi populari a Chisinau:",
                 catAll: "Tutti",
                 createBtn: "+ Crea",
                 noTasks: "Nessun compito attivo",
@@ -457,7 +458,7 @@
             } else {
                 tgLinkBtn.classList.add('hidden');
             }
-            document.getElementById('contactModal').classList.add('hidden');
+            document.getElementById('contactModal').classList.remove('hidden');
         }
 
         function confirmVipPayment() {
