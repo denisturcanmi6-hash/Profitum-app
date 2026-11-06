@@ -1,42 +1,569 @@
-const { Telegraf, Markup } = require('telegraf');
-const bot = new Telegraf('YOUR_BOT_TOKEN');
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROFITUM — Задания в Кишиневе</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans text-gray-800">
 
-// База данных (в реальном проекте здесь будет MongoDB/PostgreSQL)
-// Храним ID создателя задания: { taskId: { title: '...', ownerId: 12345678 } }
-const tasksDB = {
-  'task_101': { title: 'Помощь с переездом в Кишиневе', ownerId: 98765432 }
-};
+<!-- Header -->
+<header class="bg-white/90 backdrop-blur-md shadow-sm border-b sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <div class="bg-gradient-to-tr from-amber-500 to-emerald-600 text-white p-2 rounded-lg font-bold text-xl flex items-center justify-center w-9 h-9 shadow-md">
+                <i class="fa-solid fa-gem"></i>
+            </div>
+            <div>
+                <span class="font-black text-lg tracking-wider text-gray-900">PROFIT<span class="text-emerald-600">UM</span></span>
+                <span class="block text-[10px] text-emerald-800 font-semibold">CHISINAU</span>
+            </div>
+        </div>
 
-// 1. Исполнитель нажимает кнопку отклика на задание
-bot.action(/^apply_(.+)$/, async (ctx) => {
-  const taskId = ctx.match[1];
-  const task = tasksDB[taskId];
-  const applicant = ctx.from; // Кто откликнулся (исполнитель)
+        <div class="flex items-center space-x-2">
+            <select id="lang-switcher" onchange="changeLanguage(this.value)" class="bg-gray-100 border border-gray-200 text-gray-700 text-xs font-bold rounded-lg px-2 py-1.5 focus:outline-none cursor-pointer">
+                <option value="ru">🇷🇺 RU</option>
+                <option value="ro">🇲🇩 RO</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="it">🇮🇹 IT</option>
+            </select>
 
-  if (!task) {
-    return ctx.reply('Задание не найдено или уже закрыто.');
-  }
+            <button onclick="openCreateModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-2 rounded-lg text-xs transition flex items-center shadow-sm">
+                <i class="fa-solid fa-plus mr-1"></i><span data-i18n="createBtn">Создать</span>
+            </button>
+        </div>
+    </div>
+</header>
 
-  // Текст сообщения для заказчика
-  const messageForOwner = `🔔 Новый отклик на ваше задание: "${task.title}"\n\n` +
-    `👤 Исполнитель: ${applicant.first_name} (@${applicant.username || 'нет юзернейма'})\n` +
-    `ID: ${applicant.id}`;
+<!-- Main Content -->
+<main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+    <div class="space-y-6">
+        <!-- VIP Banner -->
+        <div class="bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-amber-500/10 p-4 rounded-xl border border-amber-200/60 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded font-bold">VIP 👑 (5%)</span>
+                <h4 class="font-bold text-gray-900 text-sm mt-1" data-i18n="proTitle">Вы мастер в Кишиневе?</h4>
+                <p class="text-xs text-gray-600" data-i18n="proDesc">Подключите VIP статус (199 MDL) со сниженной комиссией 5%!</p>
+            </div>
+            <button onclick="openProModal()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap shadow-sm">
+                <span data-i18n="proBtn">Подключить</span>
+            </button>
+        </div>
 
-  try {
-    // Отправляем уведомление заказчику с кнопкой связи
-    await bot.telegram.sendMessage(task.ownerId, messageForOwner, {
-      reply_markup: Markup.inlineKeyboard([
-        [Markup.button.url('💬 Написать исполнителю', `https://t.me/${applicant.username}`)],
-        [Markup.button.callback('✅ Подтвердить сделку', `accept_${taskId}_${applicant.id}`)]
-      ]).reply_markup
-    });
+        <!-- Filters -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-3">
+            <input type="text" id="search-input" onkeyup="filterTasks()" placeholder="Поиск по заданиям..." data-i18n-placeholder="searchPlaceholder" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
+            <select id="filter-district" onchange="filterTasks()" class="border rounded-lg text-sm px-3 py-2 bg-white border-gray-200">
+                <option value="">Все секторы</option>
+                <option value="Centru">Центр (Centru)</option>
+                <option value="Râșcani">Рышкановка (Râșcani)</option>
+                <option value="Botanica">Ботаника (Botanica)</option>
+                <option value="Ciocana">Чеканы (Ciocana)</option>
+                <option value="Buiucani">Буюканы (Buiucani)</option>
+            </select>
+        </div>
 
-    await ctx.answerCbQuery('Отклик успешно отправлен заказчику!');
-    await ctx.reply('Ваш отклик отправлен заказчику. Ожидайте связи!');
-  } catch (error) {
-    console.error(error);
-    await ctx.reply('Не удалось связаться с заказчиком. Попробуйте позже.');
-  }
-});
+        <!-- Tasks Container -->
+        <div id="tasks-container" class="space-y-4"></div>
+    </div>
+</main>
 
-bot.launch();
+<!-- Modal: Task Details & Escrow Payment -->
+<div id="task-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+        <div class="flex justify-between items-start">
+            <div>
+                <span id="modal-task-cat" class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded" data-i18n="catServices">Услуги</span>
+                <h3 id="modal-task-title" class="font-bold text-lg text-gray-900 mt-1">Название</h3>
+            </div>
+            <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        
+        <p id="modal-task-desc" class="text-xs text-gray-600">Описание задачи...</p>
+
+        <!-- Escrow & Funds Status Box -->
+        <div id="escrow-box" class="bg-amber-50 border border-amber-200 p-3 rounded-xl space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-800">
+                <span data-i18n="fundsSecureLabel"><i class="fa-solid fa-shield-halved mr-1"></i> Безопасная сделка</span>
+                <span id="modal-task-funds" class="text-amber-700" data-i18n="statusWaiting">Ожидает оплаты</span>
+            </div>
+            <p id="escrow-desc-text" class="text-[11px] text-gray-600" data-i18n="escrowDescNo">Средства не внесены. Нажмите кнопку ниже для безопасной оплаты.</p>
+            
+            <button id="pay-escrow-btn" onclick="payTaskRealGateway()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs shadow-sm transition flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-lock"></i>
+                <span data-i18n="btnPayEscrow">Внести бюджет на гарантию платформы</span>
+            </button>
+        </div>
+
+        <!-- Client & Rating Info -->
+        <div class="border-t border-b border-gray-100 py-3 space-y-2 text-xs">
+            <div class="flex justify-between items-center">
+                <span class="text-gray-500" data-i18n="clientLabel">Заказчик:</span>
+                <span class="font-bold text-gray-800"><span id="modal-client-name">Ион М.</span> <span class="text-amber-500">⭐ <span id="modal-client-rating">4.9</span></span></span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-500" data-i18n="districtLabel">Сектор:</span>
+                <span id="modal-task-district" class="font-medium text-gray-800">Centru</span>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <button onclick="contactClient()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
+                <i class="fa-brands fa-telegram"></i>
+                <span data-i18n="btnContactClient">Связаться в Telegram</span>
+            </button>
+            
+            <button onclick="deleteCurrentTask()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 rounded-lg text-xs transition flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-trash-can"></i>
+                <span data-i18n="btnDeleteTask">Удалить задание (Выполнено)</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Create Task -->
+<div id="create-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+        <div class="flex justify-between items-center">
+            <h3 class="font-bold text-lg text-gray-900" data-i18n="modalTaskTitle">Новое задание</h3>
+            <button onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelTitle">Название</label>
+                <input type="text" id="new-title" placeholder="Например: Ремонт розетки" data-i18n-placeholder="phTitle" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelUsername">Ваш Telegram Username (без @)</label>
+                <input type="text" id="new-username" placeholder="например: my_username" data-i18n-placeholder="phUsername" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelDistrict">Сектор</label>
+                    <select id="new-district" class="w-full px-3 py-2 border rounded-lg text-sm bg-white border-gray-200">
+                        <option value="Centru">Центр (Centru)</option>
+                        <option value="Râșcani">Рышкановка (Râșcani)</option>
+                        <option value="Botanica">Ботаника (Botanica)</option>
+                        <option value="Ciocana">Чеканы (Ciocana)</option>
+                        <option value="Buiucani">Буюканы (Buiucani)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelPrice">Бюджет (MDL)</label>
+                    <input type="number" id="new-price" placeholder="400" data-i18n-placeholder="phPrice" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelDesc">Описание</label>
+                <textarea id="new-desc" rows="2" placeholder="Детали задачи..." data-i18n-placeholder="phDesc" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none"></textarea>
+            </div>
+            <button onclick="addTask()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm" data-i18n="btnPublish">Опубликовать</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: VIP Status & Real Payment Gateway -->
+<div id="pro-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl text-center">
+        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">👑</div>
+        <h3 class="font-bold text-lg text-gray-900" data-i18n="proModalTitle">Активация VIP статуса (199 MDL)</h3>
+        <p class="text-xs text-gray-600" data-i18n="proModalDesc">Мгновенная оплата через систему MIA прямо на сайте.</p>
+        
+        <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-left space-y-1">
+            <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">⚡ MIA Instant Payments (Secure)</span>
+            <p class="text-xs text-gray-700" data-i18n="miaInstruction">Переведите 199 MDL по номеру телефона:</p>
+            <div class="bg-white p-2 rounded border border-amber-300 font-mono text-xs font-bold text-center text-amber-900" id="mia-phone-display">+373 60 000 000 (Profitum SRL)</div>
+        </div>
+
+        <button onclick="payVipRealGateway()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-bolt"></i>
+            <span data-i18n="proModalBtn">Оплатить через MIA / Карту</span>
+        </button>
+        <button onclick="closeProModal()" class="text-xs text-gray-400 hover:text-gray-600 mt-2 block w-full" data-i18n="closeBtn">Закрыть</button>
+    </div>
+</div>
+
+<script>
+    const PAYMENT_CONFIG = {
+        mode: "sandbox", 
+        currency: "MDL",
+        merchantId: "PROFITUM_CHISINAU_DEMO", 
+        miaPhone: "+373 60 000 000",
+        commissionRate: 0.05               
+    };
+
+    const tg = window.Telegram?.WebApp;
+    if (tg) { tg.expand(); }
+
+    let currentLang = 'ru';
+    
+    let tasksList = [
+        { 
+            id: 1, 
+            title: "Починить смеситель в ванной", 
+            category: "Бытовой ремонт", 
+            district: "Centru", 
+            price: 300, 
+            desc: "Нужно заменить картридж.", 
+            vip: true, 
+            secureFunds: false,
+            client: "ion_master",
+            clientUsername: "ion_master",
+            clientRating: 4.9
+        },
+        { 
+            id: 2, 
+            title: "Генеральная уборка квартиры 2к", 
+            category: "Уборка", 
+            district: "Botanica", 
+            price: 800, 
+            desc: "Влажная уборка всех комнат.", 
+            vip: false, 
+            secureFunds: false,
+            client: "elena_clean",
+            clientUsername: "elena_clean",
+            clientRating: 4.7
+        }
+    ];
+
+    const translations = {
+        ru: {
+            createBtn: "Создать",
+            searchPlaceholder: "Поиск по заданиям...",
+            proTitle: "Вы мастер в Кишиневе?",
+            proDesc: "Подключите VIP статус (199 MDL) со сниженной комиссией 5%!",
+            proBtn: "Подключить",
+            modalTaskTitle: "Новое задание",
+            labelTitle: "Название",
+            labelUsername: "Ваш Telegram Username (без @)",
+            labelDistrict: "Сектор",
+            labelPrice: "Бюджет (MDL)",
+            labelDesc: "Описание",
+            btnPublish: "Опубликовать",
+            phTitle: "Например: Ремонт розетки",
+            phUsername: "например: my_username",
+            phPrice: "400",
+            phDesc: "Детали задачи...",
+            proModalTitle: "Активация VIP статуса (199 MDL)",
+            proModalDesc: "Мгновенная оплата через систему MIA прямо на сайте.",
+            miaInstruction: "Переведите 199 MDL по номеру телефона:",
+            proModalBtn: "Оплатить через MIA / Карту",
+            closeBtn: "Закрыть",
+            vipBadge: "VIP 👑 (5%)",
+            secureLabel: "🔒 Гарантия платформы",
+            cashLabel: "🤝 Оплата на месте",
+            fundsSecureLabel: "🛡️ Безопасная сделка",
+            statusWaiting: "Ожидает оплаты",
+            statusReserved: "Средства зарезервированы",
+            escrowDescNo: "Средства не внесены. Нажмите кнопку ниже для безопасной оплаты.",
+            escrowDescYes: "Деньги зарезервированы на счете платформы.",
+            btnPayEscrow: "Внести бюджет на гарантию платформы",
+            clientLabel: "Заказчик:",
+            districtLabel: "Сектор:",
+            btnContactClient: "Связаться в Telegram",
+            btnDeleteTask: "Удалить задание (Выполнено)",
+            catServices: "Услуги",
+            districts: ["Все секторы", "Центр (Centru)", "Рышкановка (Râșcani)", "Ботаника (Botanica)", "Чеканы (Ciocana)", "Буюканы (Buiucani)"]
+        },
+        ro: {
+            createBtn: "Creează",
+            searchPlaceholder: "Caută sarcini...",
+            proTitle: "Ești meșter în Chișinău?",
+            proDesc: "Activează statutul VIP (199 MDL) cu comision redus de 5%!",
+            proBtn: "Activează",
+            modalTaskTitle: "Sarcină nouă",
+            labelTitle: "Titlu",
+            labelUsername: "Telegram Username (fără @)",
+            labelDistrict: "Sector",
+            labelPrice: "Buget (MDL)",
+            labelDesc: "Descriere",
+            btnPublish: "Publică",
+            phTitle: "Exemplu: Reparare priză",
+            phUsername: "exemplu: my_username",
+            phPrice: "400",
+            phDesc: "Detalii despre sarcină...",
+            proModalTitle: "Activare statut VIP (199 MDL)",
+            proModalDesc: "Plată instantanee prin sistemul MIA direct pe site.",
+            miaInstruction: "Transferați 199 MDL la numărul de telefon:",
+            proModalBtn: "Plătește prin MIA / Card",
+            closeBtn: "Închide",
+            vipBadge: "VIP 👑 (5%)",
+            secureLabel: "🔒 Garanția platformei",
+            cashLabel: "🤝 Plată la fața locului",
+            fundsSecureLabel: "🛡️ Tranzacție securizată",
+            statusWaiting: "În așteptarea plății",
+            statusReserved: "Fonduri rezervate",
+            escrowDescNo: "Fondurile nu sunt depuse. Apăsați butonul pentru plată sigură.",
+            escrowDescYes: "Banii sunt blocați în siguranță în contul platformei.",
+            btnPayEscrow: "Depune bugetul în garanția platformei",
+            clientLabel: "Client:",
+            districtLabel: "Sector:",
+            btnContactClient: "Contactează pe Telegram",
+            btnDeleteTask: "Șterge sarcina (Finalizat)",
+            catServices: "Servicii",
+            districts: ["Toate sectoarele", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
+        },
+        en: {
+            createBtn: "Create",
+            searchPlaceholder: "Search tasks...",
+            proTitle: "Are you a master in Chisinau?",
+            proDesc: "Activate VIP status (199 MDL) with a reduced 5% commission!",
+            proBtn: "Activate",
+            modalTaskTitle: "New Task",
+            labelTitle: "Title",
+            labelUsername: "Telegram Username (no @)",
+            labelDistrict: "District",
+            labelPrice: "Budget (MDL)",
+            labelDesc: "Description",
+            btnPublish: "Publish",
+            phTitle: "Example: Fix socket",
+            phUsername: "e.g.: my_username",
+            phPrice: "400",
+            phDesc: "Task details...",
+            proModalTitle: "Activate VIP Status (199 MDL)",
+            proModalDesc: "Instant payment via MIA right on the website.",
+            miaInstruction: "Transfer 199 MDL to phone number:",
+            proModalBtn: "Pay via MIA / Card",
+            closeBtn: "Close",
+            vipBadge: "VIP 👑 (5%)",
+            secureLabel: "🔒 Escrow Protected",
+            cashLabel: "🤝 Direct Payment",
+            fundsSecureLabel: "🛡️ Secure Transaction",
+            statusWaiting: "Awaiting deposit",
+            statusReserved: "Funds reserved",
+            escrowDescNo: "Funds not deposited. Click below for secure payment.",
+            escrowDescYes: "Funds are securely held in platform escrow.",
+            btnPayEscrow: "Deposit budget to platform escrow",
+            clientLabel: "Client:",
+            districtLabel: "District:",
+            btnContactClient: "Contact via Telegram",
+            btnDeleteTask: "Delete task (Completed)",
+            catServices: "Services",
+            districts: ["All districts", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
+        },
+        it: {
+            createBtn: "Crea",
+            searchPlaceholder: "Cerca compiti...",
+            proTitle: "Sei un professionista a Chișinău?",
+            proDesc: "Attiva lo status VIP (199 MDL) con una commissione ridotta del 5%!",
+            proBtn: "Attiva",
+            modalTaskTitle: "Nuovo Compito",
+            labelTitle: "Titolo",
+            labelUsername: "Telegram Username (senza @)",
+            labelDistrict: "Quartiere",
+            labelPrice: "Budget (MDL)",
+            labelDesc: "Descrizione",
+            btnPublish: "Pubblica",
+            phTitle: "Esempio: Riparazione presa",
+            phUsername: "es: my_username",
+            phPrice: "400",
+            phDesc: "Dettagli del compito...",
+            proModalTitle: "Attiva Stato VIP (199 MDL)",
+            proModalDesc: "Pagamento istantaneo tramite MIA direttamente sul sito.",
+            miaInstruction: "Trasferisci 199 MDL al numero di telefono:",
+            proModalBtn: "Paga tramite MIA / Carta",
+            closeBtn: "Chiudi",
+            vipBadge: "VIP 👑 (5%)",
+            secureLabel: "🔒 Fondi protetti",
+            cashLabel: "🤝 Pagamento diretto",
+            fundsSecureLabel: "🛡️ Transazione Sicura",
+            statusWaiting: "In attesa di deposito",
+            statusReserved: "Fondi riservati",
+            escrowDescNo: "Fondi non depositati. Clicca sotto per il pagamento sicuro.",
+            escrowDescYes: "I fondi sono trattenuti al sicuro nel conto della piattaforma.",
+            btnPayEscrow: "Deposita budget in garanzia",
+            clientLabel: "Cliente:",
+            districtLabel: "Quartiere:",
+            btnContactClient: "Contatta su Telegram",
+            btnDeleteTask: "Elimina compito (Completato)",
+            catServices: "Servizi",
+            districts: ["Tutti i quartieri", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
+        }
+    };
+
+    function changeLanguage(lang) {
+        currentLang = lang;
+        const t = translations[lang] || translations.ru;
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) el.textContent = t[key];
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (t[key]) el.placeholder = t[key];
+        });
+
+        const filterDistrict = document.getElementById('filter-district');
+        const newDistrict = document.getElementById('new-district');
+        
+        [filterDistrict, newDistrict].forEach((sel, idx) => {
+            if (sel && t.districts) {
+                const currentVal = sel.value;
+                sel.innerHTML = `
+                    ${idx === 0 ? `<option value="">${t.districts[0]}</option>` : ''}
+                    <option value="Centru">${t.districts[1]}</option>
+                    <option value="Râșcani">${t.districts[2]}</option>
+                    <option value="Botanica">${t.districts[3]}</option>
+                    <option value="Ciocana">${t.districts[4]}</option>
+                    <option value="Buiucani">${t.districts[5]}</option>
+                `;
+                sel.value = currentVal;
+            }
+        });
+
+        renderTasks(tasksList);
+    }
+
+    function renderTasks(tasks) {
+        const t = translations[currentLang] || translations.ru;
+        const container = document.getElementById('tasks-container');
+        if (!tasks.length) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">Нет активных заданий</div>`;
+            return;
+        }
+        container.innerHTML = tasks.map(item => `
+            <div onclick="openTaskModal(${item.id})" class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2 relative overflow-hidden cursor-pointer hover:border-emerald-300 transition">
+                ${item.vip ? `<div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">${t.vipBadge}</div>` : ''}
+                <div class="flex justify-between items-start pt-1">
+                    <h3 class="font-bold text-gray-900 text-sm pr-12">${item.title}</h3>
+                    <span class="font-bold text-emerald-600 text-sm">${item.price} MDL</span>
+                </div>
+                <p class="text-xs text-gray-600 line-clamp-1">${item.desc}</p>
+                <div class="flex items-center justify-between text-[11px] text-gray-500 pt-1">
+                    <span>👤 ${item.client} <span class="text-amber-500 font-semibold">⭐ ${item.clientRating}</span></span>
+                    <span class="${item.secureFunds ? 'text-emerald-700 font-semibold' : 'text-amber-600 font-semibold'}">${item.secureFunds ? t.secureLabel : t.cashLabel}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-50">
+                    <span>📍 ${item.district}</span>
+                    <span class="bg-slate-100 px-2 py-1 rounded text-gray-600">${item.category}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterTasks() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const district = document.getElementById('filter-district').value;
+        const filtered = tasksList.filter(item => 
+            (item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)) &&
+            (!district || item.district === district)
+        );
+        renderTasks(filtered);
+    }
+
+    let activeTaskId = null;
+    function openTaskModal(id) {
+        const item = tasksList.find(t => t.id === id);
+        if (!item) return;
+        activeTaskId = id;
+        const t = translations[currentLang] || translations.ru;
+
+        document.getElementById('modal-task-title').textContent = item.title;
+        document.getElementById('modal-task-desc').textContent = item.desc;
+        document.getElementById('modal-task-district').textContent = item.district;
+        document.getElementById('modal-client-name').textContent = item.client;
+        document.getElementById('modal-client-rating').textContent = item.clientRating;
+        
+        const fundsSpan = document.getElementById('modal-task-funds');
+        const descText = document.getElementById('escrow-desc-text');
+        const payBtn = document.getElementById('pay-escrow-btn');
+        const escrowBox = document.getElementById('escrow-box');
+
+        if (item.secureFunds) {
+            fundsSpan.textContent = t.statusReserved;
+            fundsSpan.className = 'text-emerald-700 font-bold';
+            descText.textContent = t.escrowDescYes;
+            escrowBox.className = 'bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-2';
+            payBtn.classList.add('hidden');
+        } else {
+            fundsSpan.textContent = t.statusWaiting;
+            fundsSpan.className = 'text-amber-700 font-bold';
+            descText.textContent = t.escrowDescNo;
+            escrowBox.className = 'bg-amber-50 border border-amber-200 p-3 rounded-xl space-y-2';
+            payBtn.classList.remove('hidden');
+        }
+
+        document.getElementById('task-modal').classList.remove('hidden');
+    }
+
+    function closeTaskModal() { document.getElementById('task-modal').classList.add('hidden'); }
+    function openCreateModal() { document.getElementById('create-modal').classList.remove('hidden'); }
+    function closeCreateModal() { document.getElementById('create-modal').classList.add('hidden'); }
+    function openProModal() { document.getElementById('pro-modal').classList.remove('hidden'); }
+    function closeProModal() { document.getElementById('pro-modal').classList.add('hidden'); }
+
+    function addTask() {
+        const title = document.getElementById('new-title').value.trim();
+        const username = document.getElementById('new-username').value.trim().replace('@', '');
+        const district = document.getElementById('new-district').value;
+        const price = Number(document.getElementById('new-price').value);
+        const desc = document.getElementById('new-desc').value.trim();
+
+        if (!title || !price || !username) {
+            return;
+        }
+
+        tasksList.unshift({
+            id: Date.now(),
+            title,
+            category: 'Услуги',
+            district,
+            price,
+            desc: desc || 'Без описания',
+            vip: true,
+            secureFunds: false,
+            client: username,
+            clientUsername: username,
+            clientRating: 5.0
+        });
+
+        renderTasks(tasksList);
+        closeCreateModal();
+
+        document.getElementById('new-title').value = '';
+        document.getElementById('new-username').value = '';
+        document.getElementById('new-price').value = '';
+        document.getElementById('new-desc').value = '';
+    }
+
+    function deleteCurrentTask() {
+        if (!activeTaskId) return;
+        tasksList = tasksList.filter(t => t.id !== activeTaskId);
+        closeTaskModal();
+        renderTasks(tasksList);
+    }
+
+    function payTaskRealGateway() {
+        const item = tasksList.find(t => t.id === activeTaskId);
+        if (!item) return;
+        item.secureFunds = true;
+        openTaskModal(activeTaskId);
+        renderTasks(tasksList);
+    }
+
+    function payVipRealGateway() {
+        closeProModal();
+    }
+
+    function contactClient() {
+        const item = tasksList.find(t => t.id === activeTaskId);
+        if (!item || !item.clientUsername) return;
+
+        const targetUrl = `https://t.me/${item.clientUsername}`;
+        
+        if (window.Telegram?.WebApp && window.Telegram.WebApp.openTelegramLink) {
+            window.Telegram.WebApp.openTelegramLink(targetUrl);
+        } else {
+            window.open(targetUrl, '_blank');
+        }
+        closeTaskModal();
+    }
+
+    renderTasks(tasksList);
+</script>
+</body>
+</html>
