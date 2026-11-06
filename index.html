@@ -127,7 +127,11 @@
         <div class="space-y-3">
             <div>
                 <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelTitle">Название</label>
-                <input type="text" id="new-title" placeholder="Например: Ремонт розетки" data-i18n-placeholder="phTitle" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
+                <input type="text" id="new-title" placeholder="Например: Ремонт розетки" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Ваш Telegram Username (без @)</label>
+                <input type="text" id="new-username" placeholder="например: my_username" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
             </div>
             <div class="grid grid-cols-2 gap-2">
                 <div>
@@ -142,12 +146,12 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelPrice">Бюджет (MDL)</label>
-                    <input type="number" id="new-price" placeholder="400" data-i18n-placeholder="phPrice" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
+                    <input type="number" id="new-price" placeholder="400" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
                 </div>
             </div>
             <div>
                 <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelDesc">Описание</label>
-                <textarea id="new-desc" rows="3" placeholder="Детали задачи..." data-i18n-placeholder="phDesc" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none"></textarea>
+                <textarea id="new-desc" rows="2" placeholder="Детали задачи..." class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none"></textarea>
             </div>
             <button onclick="addTask()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm" data-i18n="btnPublish">Опубликовать</button>
         </div>
@@ -164,7 +168,7 @@
         <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-left space-y-1">
             <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">⚡ MIA Instant Payments (Secure)</span>
             <p class="text-xs text-gray-700" data-i18n="miaInstruction">Переведите 199 MDL по номеру телефона:</p>
-            <div class="bg-white p-2 rounded border border-amber-300 font-mono text-xs font-bold text-center text-amber-900" id="mia-phone-display">+373 60 000 000 (Profitum SRL)</div>
+            <div class="bg-white p-2 rounded border border-amber-300 font-mono text-xs font-bold text-center text-amber-900">+373 60 000 000 (Profitum SRL)</div>
         </div>
 
         <button onclick="payVipRealGateway()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
@@ -199,7 +203,8 @@
             desc: "Azi urgent", 
             vip: true, 
             secureFunds: false,
-            client: "Profitum User",
+            client: "Ион М.",
+            clientUsername: "durov", // Пример юзернейма заказчика
             clientRating: 5.0
         },
         { 
@@ -212,6 +217,7 @@
             vip: false, 
             secureFunds: false,
             client: "Елена К.",
+            clientUsername: "telegram", // Пример
             clientRating: 4.7
         }
     ];
@@ -229,23 +235,6 @@
             labelPrice: "Бюджет (MDL)",
             labelDesc: "Описание",
             btnPublish: "Опубликовать",
-            phTitle: "Например: Ремонт розетки",
-            phPrice: "400",
-            phDesc: "Детали задачи...",
-            proModalTitle: "Активация VIP статуса (199 MDL)",
-            proModalDesc: "Мгновенная оплата через систему MIA прямо на сайте.",
-            miaInstruction: "Переведите 199 MDL по номеру телефона:",
-            proModalBtn: "Оплатить через MIA / Карту",
-            closeBtn: "Закрыть",
-            vipBadge: "VIP 👑 (5%)",
-            secureLabel: "🔒 Гарантия платформы",
-            cashLabel: "🤝 Оплата на месте",
-            fundsSecureLabel: "🛡️ Безопасная сделка",
-            fundsSecureYes: "Средства зарезервированы на счете",
-            fundsSecureNo: "Ожидает оплаты на гарантию",
-            fundsDesc: "Деньги зарезервированы на счете платформы и будут выплачены после выполнения.",
-            fundsDescNo: "Средства не внесены. Нажмите кнопку ниже для безопасной оплаты.",
-            btnPayEscrow: "Внести бюджет на гарантию платформы",
             clientLabel: "Заказчик:",
             districtLabel: "Сектор:",
             btnContactClient: "Связаться в Telegram",
@@ -263,23 +252,6 @@
             labelPrice: "Buget (MDL)",
             labelDesc: "Descriere",
             btnPublish: "Publică",
-            phTitle: "Exemplu: Reparare priză",
-            phPrice: "400",
-            phDesc: "Detalii despre sarcină...",
-            proModalTitle: "Activare statut VIP (199 MDL)",
-            proModalDesc: "Plată instantanee prin sistemul MIA direct pe site.",
-            miaInstruction: "Transferați 199 MDL la numărul de telefon:",
-            proModalBtn: "Plătește prin MIA / Card",
-            closeBtn: "Închide",
-            vipBadge: "VIP 👑 (5%)",
-            secureLabel: "🔒 Garanția platformei",
-            cashLabel: "🤝 Plată la fața locului",
-            fundsSecureLabel: "🛡️ Tranzacție securizată",
-            fundsSecureYes: "Fonduri rezervate în cont",
-            fundsSecureNo: "În așteptarea plății",
-            fundsDesc: "Banii sunt blocați în siguranță în contul platformei până la finalizare.",
-            fundsDescNo: "Fondurile nu sunt depuse. Apăsați butonul pentru plată sigură.",
-            btnPayEscrow: "Depune bugetul în garanția platformei",
             clientLabel: "Client:",
             districtLabel: "Sector:",
             btnContactClient: "Contactează pe Telegram",
@@ -297,23 +269,6 @@
             labelPrice: "Budget (MDL)",
             labelDesc: "Description",
             btnPublish: "Publish",
-            phTitle: "Example: Fix socket",
-            phPrice: "400",
-            phDesc: "Task details...",
-            proModalTitle: "Activate VIP Status (199 MDL)",
-            proModalDesc: "Instant payment via MIA right on the website.",
-            miaInstruction: "Transfer 199 MDL to phone number:",
-            proModalBtn: "Pay via MIA / Card",
-            closeBtn: "Close",
-            vipBadge: "VIP 👑 (5%)",
-            secureLabel: "🔒 Escrow Protected",
-            cashLabel: "🤝 Direct Payment",
-            fundsSecureLabel: "🛡️ Secure Transaction",
-            fundsSecureYes: "Funds reserved in escrow",
-            fundsSecureNo: "Awaiting escrow deposit",
-            fundsDesc: "Funds are securely held in platform escrow until completion.",
-            fundsDescNo: "Funds not deposited. Click below for secure payment.",
-            btnPayEscrow: "Deposit budget to platform escrow",
             clientLabel: "Client:",
             districtLabel: "District:",
             btnContactClient: "Contact via Telegram",
@@ -331,23 +286,6 @@
             labelPrice: "Budget (MDL)",
             labelDesc: "Descrizione",
             btnPublish: "Pubblica",
-            phTitle: "Esempio: Riparazione presa",
-            phPrice: "400",
-            phDesc: "Dettagli del compito...",
-            proModalTitle: "Attiva Stato VIP (199 MDL)",
-            proModalDesc: "Pagamento istantaneo tramite MIA direttamente sul sito.",
-            miaInstruction: "Trasferisci 199 MDL al numero di telefono:",
-            proModalBtn: "Paga tramite MIA / Carta",
-            closeBtn: "Chiudi",
-            vipBadge: "VIP 👑 (5%)",
-            secureLabel: "🔒 Fondi protetti",
-            cashLabel: "🤝 Pagamento diretto",
-            fundsSecureLabel: "🛡️ Transazione Sicura",
-            fundsSecureYes: "Fondi riservati in garanzia",
-            fundsSecureNo: "In attesa di deposito",
-            fundsDesc: "I fondi sono trattenuti al sicuro nel conto della piattaforma fino al completamento.",
-            fundsDescNo: "Fondi non depositati. Clicca sotto per il pagamento sicuro.",
-            btnPayEscrow: "Deposita budget in garanzia",
             clientLabel: "Cliente:",
             districtLabel: "Quartiere:",
             btnContactClient: "Contatta su Telegram",
@@ -362,10 +300,6 @@
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (t[key]) el.textContent = t[key];
-        });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-i18n-placeholder');
-            if (t[key]) el.placeholder = t[key];
         });
 
         const filterDistrict = document.getElementById('filter-district');
@@ -398,7 +332,7 @@
         }
         container.innerHTML = tasks.map(item => `
             <div onclick="openTaskModal(${item.id})" class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2 relative overflow-hidden cursor-pointer hover:border-emerald-300 transition">
-                ${item.vip ? `<div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">${t.vipBadge}</div>` : ''}
+                ${item.vip ? `<div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">VIP 👑</div>` : ''}
                 <div class="flex justify-between items-start pt-1">
                     <h3 class="font-bold text-gray-900 text-sm pr-12">${item.title}</h3>
                     <span class="font-bold text-emerald-600 text-sm">${item.price} MDL</span>
@@ -406,7 +340,7 @@
                 <p class="text-xs text-gray-600 line-clamp-1">${item.desc}</p>
                 <div class="flex items-center justify-between text-[11px] text-gray-500 pt-1">
                     <span>👤 ${item.client} <span class="text-amber-500 font-semibold">⭐ ${item.clientRating}</span></span>
-                    <span class="${item.secureFunds ? 'text-emerald-700 font-semibold' : 'text-amber-600 font-semibold'}">${item.secureFunds ? t.secureLabel : t.cashLabel}</span>
+                    <span class="${item.secureFunds ? 'text-emerald-700 font-semibold' : 'text-amber-600 font-semibold'}">${item.secureFunds ? '🔒 Гарантия' : '🤝 На месте'}</span>
                 </div>
                 <div class="flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-50">
                     <span>📍 ${item.district}</span>
@@ -431,7 +365,6 @@
         const item = tasksList.find(t => t.id === id);
         if (!item) return;
         activeTaskId = id;
-        const t = translations[currentLang] || translations.ru;
 
         document.getElementById('modal-task-title').textContent = item.title;
         document.getElementById('modal-task-desc').textContent = item.desc;
@@ -445,15 +378,15 @@
         const escrowBox = document.getElementById('escrow-box');
 
         if (item.secureFunds) {
-            fundsSpan.textContent = t.fundsSecureYes;
+            fundsSpan.textContent = "Средства зарезервированы";
             fundsSpan.className = 'text-emerald-700 font-bold';
-            descText.textContent = t.fundsDesc;
+            descText.textContent = "Деньги зарезервированы на счете платформы.";
             escrowBox.className = 'bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-2';
             payBtn.classList.add('hidden');
         } else {
-            fundsSpan.textContent = t.fundsSecureNo;
+            fundsSpan.textContent = "Ожидает оплаты";
             fundsSpan.className = 'text-amber-700 font-bold';
-            descText.textContent = t.fundsDescNo;
+            descText.textContent = "Средства не внесены. Нажмите кнопку ниже для безопасной оплаты.";
             escrowBox.className = 'bg-amber-50 border border-amber-200 p-3 rounded-xl space-y-2';
             payBtn.classList.remove('hidden');
         }
@@ -462,21 +395,20 @@
     }
 
     function closeTaskModal() { document.getElementById('task-modal').classList.add('hidden'); }
-
     function openCreateModal() { document.getElementById('create-modal').classList.remove('hidden'); }
     function closeCreateModal() { document.getElementById('create-modal').classList.add('hidden'); }
-
     function openProModal() { document.getElementById('pro-modal').classList.remove('hidden'); }
     function closeProModal() { document.getElementById('pro-modal').classList.add('hidden'); }
 
     function addTask() {
         const title = document.getElementById('new-title').value.trim();
+        const username = document.getElementById('new-username').value.trim().replace('@', '');
         const district = document.getElementById('new-district').value;
         const price = Number(document.getElementById('new-price').value);
         const desc = document.getElementById('new-desc').value.trim();
 
-        if (!title || !price) {
-            alert('Заполните название и бюджет!');
+        if (!title || !price || !username) {
+            alert('Заполните название, бюджет и ваш Telegram username!');
             return;
         }
 
@@ -489,7 +421,8 @@
             desc: desc || 'Без описания',
             vip: true,
             secureFunds: false,
-            client: "Вы (Клиент)",
+            client: username,
+            clientUsername: username,
             clientRating: 5.0
         });
 
@@ -497,6 +430,7 @@
         closeCreateModal();
 
         document.getElementById('new-title').value = '';
+        document.getElementById('new-username').value = '';
         document.getElementById('new-price').value = '';
         document.getElementById('new-desc').value = '';
     }
@@ -507,7 +441,7 @@
 
         setTimeout(() => {
             item.secureFunds = true;
-            alert(`[MIA API]: Платеж на ${item.price} MDL успешно проведен! Средства зарезервированы.`);
+            alert(`[MIA API]: Платеж на ${item.price} MDL успешно проведен!`);
             openTaskModal(activeTaskId);
             renderTasks(tasksList);
         }, 300);
@@ -515,21 +449,29 @@
 
     function payVipRealGateway() {
         setTimeout(() => {
-            alert(`[MIA API]: Оплата 199 MDL за VIP статус успешно поступила на счет ${PAYMENT_CONFIG.miaPhone}! Статус активирован.`);
+            alert(`[MIA API]: Оплата 199 MDL за VIP статус успешно поступила!`);
             closeProModal();
         }, 300);
     }
 
+    // УНИВЕРСАЛЬНАЯ СВЯЗЬ С ЛЮБЫМ ЗАКАЗЧИКОМ ЧЕРЕЗ TELEGRAM
     function contactClient() {
-        if (window.Telegram?.WebApp) {
-            window.Telegram.WebApp.openTelegramLink('https://t.me/share/url?url=https://t.me/ProfitumChisinauBot');
+        const item = tasksList.find(t => t.id === activeTaskId);
+        if (!item || !item.clientUsername) {
+            alert('Контакт заказчика не найден');
+            return;
+        }
+
+        const targetUrl = `https://t.me/${item.clientUsername}`;
+        
+        if (window.Telegram?.WebApp && window.Telegram.WebApp.openTelegramLink) {
+            window.Telegram.WebApp.openTelegramLink(targetUrl);
         } else {
-            window.open('https://t.me/', '_blank');
+            window.open(targetUrl, '_blank');
         }
         closeTaskModal();
     }
 
-    // Инициализация отображения заданий при загрузке страницы
     renderTasks(tasksList);
 </script>
 </body>
