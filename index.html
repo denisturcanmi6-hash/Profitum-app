@@ -423,7 +423,7 @@
                 searchPlaceholder: "Cerca compiti...",
                 optAllChisinau: "🏙️ Chisinau (Tutti)",
                 optAllMoldova: "🗺️ Moldova (Regioni)",
-                lblCatTitle: "Servizi populari a Chisinau:",
+                lblCatTitle: "Servizi popolari a Chisinau:",
                 catAll: "Tutti",
                 createBtn: "+ Crea",
                 noTasks: "Nessun compito attivo",
@@ -731,12 +731,11 @@
                     price: parseFloat(document.getElementById('taskPrice').value),
                     district: document.getElementById('taskSector').value,
                     contact: contactValue,
-                    username: contactValue, // отправляем сразу в оба поля для надежности
+                    username: contactValue,
                     category: document.getElementById('taskCategory').value,
                     desc: document.getElementById('taskDesc').value,
                     prepay: document.getElementById('taskPrepay').checked,
-                    status: 'active',
-                    is_vip: false
+                    status: 'active'
                 };
 
                 const { error } = await supabaseClient.from('tasks').insert([newTask]);
