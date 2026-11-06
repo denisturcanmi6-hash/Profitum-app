@@ -465,7 +465,7 @@
             } else {
                 tgLinkBtn.classList.add('hidden');
             }
-            document.getElementById('contactModal').classList.remove('hidden');
+            document.getElementById('contactModal').classList.add('hidden');
         }
 
         function confirmVipPayment() {
@@ -625,25 +625,22 @@
                     const file = fileInput.files[0];
                     const fileName = `task_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
                     
-                    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/task-photos/${fileName}`, {
-                        method: 'POST',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Content-Type': file.type || 'image/jpeg'
-                        },
-                        body: file
-                    });
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                        .from('task-photos')
+                        .upload(fileName, file, { upsert: true });
 
-                    if (!uploadRes.ok) {
-                        const errText = await uploadRes.text();
-                        alert("Ошибка загрузки фото: " + errText);
+                    if (uploadError) {
+                        alert("Ошибка загрузки фото: " + uploadError.message);
                         btn.innerText = originalText;
                         btn.disabled = false;
                         return;
                     }
 
-                    imageUrl = `${SUPABASE_URL}/storage/v1/object/public/task-photos/${fileName}`;
+                    const { data: publicUrlData } = supabaseClient.storage
+                        .from('task-photos')
+                        .getPublicUrl(fileName);
+
+                    imageUrl = publicUrlData.publicUrl;
                 }
 
                 const newTask = {
@@ -683,24 +680,21 @@
                 const file = fileInput.files[0];
                 const fileName = `report_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
                 
-                const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/task-photos/${fileName}`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': file.type || 'image/jpeg'
-                    },
-                    body: file
-                });
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                    .from('task-photos')
+                    .upload(fileName, file, { upsert: true });
 
-                if (!uploadRes.ok) {
-                    const errText = await uploadRes.text();
-                    alert("Ошибка загрузки отчета: " + errText);
+                if (uploadError) {
+                    alert("Ошибка загрузки отчета: " + uploadError.message);
                     btn.disabled = false;
                     return;
                 }
 
-                const reportUrl = `${SUPABASE_URL}/storage/v1/object/public/task-photos/${fileName}`;
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from('task-photos')
+                    .getPublicUrl(fileName);
+
+                const reportUrl = publicUrlData.publicUrl;
 
                 const { error: updateError } = await supabaseClient
                     .from('tasks')
