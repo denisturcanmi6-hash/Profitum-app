@@ -158,7 +158,7 @@
         </div>
     </div>
 
-    <!-- Модальное окно АДМИНКИ (личная выдача VIP) -->
+    <!-- Модальное окно АДМИНКИ -->
     <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 space-y-4">
             <div class="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -506,7 +506,6 @@
                 return;
             }
 
-            // Сортируем: сначала VIP-заказы
             tasks.sort((a, b) => (b.is_vip === true) - (a.is_vip === true));
 
             container.innerHTML = tasks.map(task => {
@@ -611,7 +610,6 @@
             } catch (err) { allTasks = []; renderTasks([]); }
         }
 
-        // Создание задания с прямой загрузкой фото через fetch (обход JWS)
         async function handleCreateTask(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -668,7 +666,6 @@
             finally { btn.innerText = originalText; btn.disabled = false; }
         }
 
-        // Отправка фотоотчета мастера через прямой fetch
         async function submitTaskReport() {
             const taskId = document.getElementById('reportTaskId').value;
             const fileInput = document.getElementById('reportPhotoFile');
