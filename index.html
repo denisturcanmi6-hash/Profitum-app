@@ -205,7 +205,7 @@
                     <div>
                         <label id="lblTaskSector" class="text-[11px] font-semibold text-gray-700 block mb-1">Район / Город</label>
                         <select id="taskSector" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-2 py-2 text-xs text-gray-800 focus:outline-none focus:border-emerald-500">
-                            <optgroup label="🏙️ Кишинев">
+                            <optgroup label="🏙️ Кишинев" id="optGroupChisinau">
                                 <option value="Chisinau (Весь город)">Весь город</option>
                                 <option value="Centru">Центр (Centru)</option>
                                 <option value="Botanica">Ботаника (Botanica)</option>
@@ -213,7 +213,7 @@
                                 <option value="Ciocana">Чокана (Ciocana)</option>
                                 <option value="Riscani">Рышкановка (Rîșcani)</option>
                             </optgroup>
-                            <optgroup label="📍 Регионы Молдовы">
+                            <optgroup label="📍 Регионы Молдовы" id="optGroupMoldova">
                                 <option value="Balti">Бельцы (Bălți)</option>
                                 <option value="Orhei">Орхей</option>
                                 <option value="Ungheni">Унгень</option>
@@ -238,12 +238,12 @@
                 <div>
                     <label id="lblTaskCategory" class="text-[11px] font-semibold text-gray-700 block mb-1">Категория</label>
                     <select id="taskCategory" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-2 py-2 text-xs text-gray-800 focus:outline-none focus:border-emerald-500">
-                        <option value="Ремонт">🧰 Ремонт</option>
-                        <option value="Уборка">🧹 Уборка</option>
-                        <option value="Сборка">🪑 Сборка мебели</option>
-                        <option value="IT">💻 IT и Техника</option>
-                        <option value="Красота">💄 Красота</option>
-                        <option value="Услуги">Другие услуги</option>
+                        <option value="Ремонт" id="optRepair">🧰 Ремонт</option>
+                        <option value="Уборка" id="optClean">🧹 Уборка</option>
+                        <option value="Сборка" id="optAssembly">🪑 Сборка мебели</option>
+                        <option value="IT" id="optIt">💻 IT и Техника</option>
+                        <option value="Красота" id="optBeauty">💄 Красота</option>
+                        <option value="Услуги" id="optOther">Другие услуги</option>
                     </select>
                 </div>
 
@@ -316,7 +316,27 @@
                 respondBtn: "Откликнуться / Связаться",
                 deleteBtn: "🗑️ Удалить",
                 vipTaskBadge: "👑 VIP-ЗАКАЗ (ПРИОРИТЕТ)",
-                prepayLabel: "🔒 С предоплатой (Гарантия 5%)"
+                prepayLabel: "🔒 С предоплатой (Гарантия 5%)",
+                modalTitleText: "Новое задание",
+                lblTaskTitle: "Название работы",
+                taskTitlePlaceholder: "Напр: Собрать шкаф",
+                lblTaskPrice: "Оплата (MDL)",
+                lblTaskSector: "Район / Город",
+                lblTaskContact: "Контакт (Telegram @username / Телефон)",
+                taskContactPlaceholder: "@username или +373...",
+                lblTaskCategory: "Категория",
+                lblTaskDesc: "Описание",
+                taskDescPlaceholder: "Детали задачи...",
+                lblTaskPrepay: "С предоплатой (гарантия 5%)",
+                submitBtn: "Опубликовать",
+                optRepair: "🧰 Ремонт",
+                optClean: "🧹 Уборка",
+                optAssembly: "🪑 Сборка мебели",
+                optIt: "💻 IT и Техника",
+                optBeauty: "💄 Красота",
+                optOther: "Другие услуги",
+                optGroupChisinau: "🏙️ Кишинев",
+                optGroupMoldova: "📍 Регионы Молдовы"
             },
             ro: {
                 flag: "🇷🇴 RO ↕",
@@ -334,7 +354,27 @@
                 respondBtn: "Aplicați / Contactează",
                 deleteBtn: "🗑️ Șterge",
                 vipTaskBadge: "👑 COMANDĂ VIP (PRIORITATE)",
-                prepayLabel: "🔒 Cu avans (Garanție 5%)"
+                prepayLabel: "🔒 Cu avans (Garanție 5%)",
+                modalTitleText: "Sarcină nouă",
+                lblTaskTitle: "Denumirea lucrării",
+                taskTitlePlaceholder: "Ex: Asamblare dulap",
+                lblTaskPrice: "Plată (MDL)",
+                lblTaskSector: "Sector / Oraș",
+                lblTaskContact: "Contact (Telegram @username / Telefon)",
+                taskContactPlaceholder: "@username sau +373...",
+                lblTaskCategory: "Categorie",
+                lblTaskDesc: "Descriere",
+                taskDescPlaceholder: "Detalii despre sarcină...",
+                lblTaskPrepay: "Cu avans (garanție 5%)",
+                submitBtn: "Publică",
+                optRepair: "🧰 Reparații",
+                optClean: "🧹 Curățenie",
+                optAssembly: "🪑 Asamblare mobilier",
+                optIt: "💻 IT și Tehnică",
+                optBeauty: "💄 Frumusețe",
+                optOther: "Alte servicii",
+                optGroupChisinau: "🏙️ Chișinău",
+                optGroupMoldova: "📍 Regiunile Moldovei"
             },
             en: {
                 flag: "🇬🇧 EN ↕",
@@ -352,7 +392,27 @@
                 respondBtn: "Apply / Contact client",
                 deleteBtn: "🗑️ Delete",
                 vipTaskBadge: "👑 VIP TASK (PRIORITY)",
-                prepayLabel: "🔒 Prepayment (5% Guarantee)"
+                prepayLabel: "🔒 Prepayment (5% Guarantee)",
+                modalTitleText: "New Task",
+                lblTaskTitle: "Task Title",
+                taskTitlePlaceholder: "E.g.: Assemble a wardrobe",
+                lblTaskPrice: "Payment (MDL)",
+                lblTaskSector: "District / City",
+                lblTaskContact: "Contact (Telegram @username / Phone)",
+                taskContactPlaceholder: "@username or +373...",
+                lblTaskCategory: "Category",
+                lblTaskDesc: "Description",
+                taskDescPlaceholder: "Task details...",
+                lblTaskPrepay: "With prepayment (5% guarantee)",
+                submitBtn: "Publish",
+                optRepair: "🧰 Repair",
+                optClean: "🧹 Cleaning",
+                optAssembly: "🪑 Furniture Assembly",
+                optIt: "💻 IT & Tech",
+                optBeauty: "💄 Beauty",
+                optOther: "Other services",
+                optGroupChisinau: "🏙️ Chisinau",
+                optGroupMoldova: "📍 Moldova Regions"
             },
             it: {
                 flag: "🇮🇹 IT ↕",
@@ -363,14 +423,34 @@
                 searchPlaceholder: "Cerca compiti...",
                 optAllChisinau: "🏙️ Chisinau (Tutti)",
                 optAllMoldova: "🗺️ Moldova (Regioni)",
-                lblCatTitle: "Servizi popolari a Chisinau:",
+                lblCatTitle: "Servizi populari a Chisinau:",
                 catAll: "Tutti",
                 createBtn: "+ Crea",
                 noTasks: "Nessun compito attivo",
                 respondBtn: "Candidati / Contatta",
                 deleteBtn: "🗑️ Elimina",
                 vipTaskBadge: "👑 ORDINE VIP (PRIORITÀ)",
-                prepayLabel: "🔒 Con acconto (Garanzia 5%)"
+                prepayLabel: "🔒 Con acconto (Garanzia 5%)",
+                modalTitleText: "Nuovo Compito",
+                lblTaskTitle: "Titolo del lavoro",
+                taskTitlePlaceholder: "Es: Montare un armadio",
+                lblTaskPrice: "Compenso (MDL)",
+                lblTaskSector: "Quartiere / Città",
+                lblTaskContact: "Contatto (Telegram @username / Telefono)",
+                taskContactPlaceholder: "@username o +373...",
+                lblTaskCategory: "Categoria",
+                lblTaskDesc: "Descrizione",
+                taskDescPlaceholder: "Dettagli del compito...",
+                lblTaskPrepay: "Con acconto (garanzia 5%)",
+                submitBtn: "Pubblica",
+                optRepair: "🧰 Riparazioni",
+                optClean: "🧹 Pulizie",
+                optAssembly: "🪑 Montaggio mobili",
+                optIt: "💻 IT e Tecnologia",
+                optBeauty: "💄 Bellezza",
+                optOther: "Altri servizi",
+                optGroupChisinau: "🏙️ Chisinau",
+                optGroupMoldova: "📍 Regioni della Moldavia"
             }
         };
 
@@ -411,6 +491,28 @@
             document.getElementById('lblCatTitle').innerText = t.lblCatTitle;
             document.getElementById('catAll').innerText = t.catAll;
             document.getElementById('createBtn').innerText = t.createBtn;
+
+            document.getElementById('modalTitleText').innerText = t.modalTitleText;
+            document.getElementById('lblTaskTitle').innerText = t.lblTaskTitle;
+            document.getElementById('taskTitle').placeholder = t.taskTitlePlaceholder;
+            document.getElementById('lblTaskPrice').innerText = t.lblTaskPrice;
+            document.getElementById('lblTaskSector').innerText = t.lblTaskSector;
+            document.getElementById('lblTaskContact').innerText = t.lblTaskContact;
+            document.getElementById('taskContact').placeholder = t.taskContactPlaceholder;
+            document.getElementById('lblTaskCategory').innerText = t.lblTaskCategory;
+            document.getElementById('lblTaskDesc').innerText = t.lblTaskDesc;
+            document.getElementById('taskDesc').placeholder = t.taskDescPlaceholder;
+            document.getElementById('lblTaskPrepay').innerText = t.lblTaskPrepay;
+            document.getElementById('submitBtn').innerText = t.submitBtn;
+
+            document.getElementById('optRepair').innerText = t.optRepair;
+            document.getElementById('optClean').innerText = t.optClean;
+            document.getElementById('optAssembly').innerText = t.optAssembly;
+            document.getElementById('optIt').innerText = t.optIt;
+            document.getElementById('optBeauty').innerText = t.optBeauty;
+            document.getElementById('optOther').innerText = t.optOther;
+            document.getElementById('optGroupChisinau').label = t.optGroupChisinau;
+            document.getElementById('optGroupMoldova').label = t.optGroupMoldova;
 
             renderTasks(allTasks);
         }
@@ -528,7 +630,7 @@
             tasks.sort((a, b) => (b.is_vip === true) - (a.is_vip === true));
 
             container.innerHTML = tasks.map(task => {
-                const contact = task.username || task.contact || '@profitum_support';
+                const contact = task.contact || task.username || '@profitum_support';
                 const hasPrepay = task.prepay || task.is_prepay;
                 const isVip = task.is_vip;
 
@@ -623,11 +725,13 @@
             btn.disabled = true;
 
             try {
+                const contactValue = document.getElementById('taskContact').value;
                 const newTask = {
                     title: document.getElementById('taskTitle').value,
                     price: parseFloat(document.getElementById('taskPrice').value),
                     district: document.getElementById('taskSector').value,
-                    username: document.getElementById('taskContact').value, // Отправляем в колонку username
+                    contact: contactValue,
+                    username: contactValue, // отправляем сразу в оба поля для надежности
                     category: document.getElementById('taskCategory').value,
                     desc: document.getElementById('taskDesc').value,
                     prepay: document.getElementById('taskPrepay').checked,
