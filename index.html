@@ -71,7 +71,7 @@
     </div>
 </main>
 
-<!-- Modal: Task Details & Contact -->
+<!-- Modal: Task Details & Escrow Payment -->
 <div id="task-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
         <div class="flex justify-between items-start">
@@ -84,16 +84,21 @@
         
         <p id="modal-task-desc" class="text-xs text-gray-600">Описание задачи...</p>
 
-        <!-- Escrow & Funds Status -->
-        <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-1">
-            <div class="flex items-center justify-between text-xs font-bold text-emerald-800">
-                <span data-i18n="fundsSecureLabel"><i class="fa-solid fa-shield-halved mr-1"></i> Безопасная сделка (Гарантия)</span>
-                <span id="modal-task-funds" class="text-emerald-700">Внесено на платформу</span>
+        <!-- Escrow & Funds Status Box -->
+        <div id="escrow-box" class="bg-amber-50 border border-amber-200 p-3 rounded-xl space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-800">
+                <span data-i18n="fundsSecureLabel"><i class="fa-solid fa-shield-halved mr-1"></i> Безопасная сделка</span>
+                <span id="modal-task-funds" class="text-amber-700">Ожидает оплаты</span>
             </div>
-            <p class="text-[11px] text-gray-600" data-i18n="fundsDesc">Деньги зарезервированы и будут выплачены мастеру после выполнения работы.</p>
+            <p id="escrow-desc-text" class="text-[11px] text-gray-600" data-i18n="fundsDescNo">Средства не внесены. Нажмите кнопку ниже для безопасной оплаты.</p>
+            
+            <button id="pay-escrow-btn" onclick="payTaskRealGateway()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-xs shadow-sm transition flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-lock"></i>
+                <span data-i18n="btnPayEscrow">Внести бюджет на гарантию платформы</span>
+            </button>
         </div>
 
-        <!-- Client & Master Rating Info -->
+        <!-- Client & Rating Info -->
         <div class="border-t border-b border-gray-100 py-3 space-y-2 text-xs">
             <div class="flex justify-between items-center">
                 <span class="text-gray-500" data-i18n="clientLabel">Заказчик:</span>
@@ -105,9 +110,9 @@
             </div>
         </div>
 
-        <button onclick="contactClient()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
+        <button onclick="contactClient()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
             <i class="fa-brands fa-telegram"></i>
-            <span data-i18n="btnContactClient">Связаться с заказчиком</span>
+            <span data-i18n="btnContactClient">Связаться в Telegram</span>
         </button>
     </div>
 </div>
@@ -144,39 +149,44 @@
                 <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="labelDesc">Описание</label>
                 <textarea id="new-desc" rows="3" placeholder="Детали задачи..." data-i18n-placeholder="phDesc" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none"></textarea>
             </div>
-            <div class="flex items-center space-x-2 pt-1">
-                <input type="checkbox" id="new-secure" checked class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
-                <label for="new-secure" class="text-xs text-gray-700" data-i18n="secureCheckLabel">Заморозить средства на гарантии платформы</label>
-            </div>
             <button onclick="addTask()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm" data-i18n="btnPublish">Опубликовать</button>
         </div>
     </div>
 </div>
 
-<!-- Modal: VIP Status & MIA Payment -->
+<!-- Modal: VIP Status & Real Payment Gateway -->
 <div id="pro-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl text-center">
         <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">👑</div>
         <h3 class="font-bold text-lg text-gray-900" data-i18n="proModalTitle">Активация VIP статуса (199 MDL)</h3>
-        <p class="text-xs text-gray-600" data-i18n="proModalDesc">Получите эксклюзивную комиссию всего 5% и приоритет в заказах через систему MIA.</p>
+        <p class="text-xs text-gray-600" data-i18n="proModalDesc">Мгновенная оплата через систему MIA прямо на сайте.</p>
         
-        <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-left space-y-1">
-            <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">⚡ MIA Instant Payments</span>
-            <p class="text-xs text-gray-700" data-i18n="miaInstruction">Переведите 199 MDL по номеру телефона:</p>
-            <div class="font-mono font-bold text-emerald-800 text-sm bg-white p-2 rounded border border-emerald-100 text-center">
-                +373 60 000 000 (Profitum SRL)
-            </div>
+        <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-left space-y-1">
+            <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">⚡ MIA Instant Payments (Secure)</span>
+            <p class="text-xs text-gray-700" data-i18n="miaInstruction">Нажмите кнопку ниже для моментального списания и активации VIP статуса на платформе:</p>
         </div>
 
-        <button onclick="payViaMia()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
+        <button onclick="payVipRealGateway()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
             <i class="fa-solid fa-bolt"></i>
-            <span data-i18n="proModalBtn">Оплатить через MIA / Карту</span>
+            <span data-i18n="proModalBtn">Оплатить 199 MDL внутри сайта</span>
         </button>
         <button onclick="closeProModal()" class="text-xs text-gray-400 hover:text-gray-600 mt-2 block w-full" data-i18n="closeBtn">Закрыть</button>
     </div>
 </div>
 
 <script>
+    // ==========================================
+    // КОНФИГУРАЦИЯ ПЛАТЕЖНЫХ ШЛЮЗОВ И API КЛЮЧЕЙ
+    // ==========================================
+    const PAYMENT_CONFIG = {
+        mode: "sandbox", // Замените на "live" при переходе в реальный режим
+        currency: "MDL",
+        merchantId: "PROFITUM_CHISINAU_DEMO", // Сюда вставите Merchant ID от банка (например, MAIB)
+        apiKey: "",                        // Сюда вставите ваш секретный API ключ
+        miaPhone: "+37360000000",            // Ваш молдавский номер для MIA
+        commissionRate: 0.05               // Ваша комиссия платформы 5%
+    };
+
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.expand(); }
 
@@ -185,15 +195,15 @@
     let tasksList = [
         { 
             id: 1, 
-            title: "Починить смеситель в ванной", 
-            category: "Бытовой ремонт", 
+            title: "Prize 220v", 
+            category: "Услуги", 
             district: "Centru", 
-            price: 300, 
-            desc: "Нужно заменить картридж.", 
+            price: 500, 
+            desc: "Azi urgent", 
             vip: true, 
-            secureFunds: true,
-            client: "Ион М.",
-            clientRating: 4.9
+            secureFunds: false,
+            client: "Вы (Клиент)",
+            clientRating: 5.0
         },
         { 
             id: 2, 
@@ -226,22 +236,22 @@
             phPrice: "400",
             phDesc: "Детали задачи...",
             proModalTitle: "Активация VIP статуса (199 MDL)",
-            proModalDesc: "Получите эксклюзивную комиссию всего 5% и приоритет в заказах через систему MIA.",
-            miaInstruction: "Переведите 199 MDL по номеру телефона:",
-            proModalBtn: "Оплатить через MIA / Карту",
+            proModalDesc: "Мгновенная оплата через систему MIA прямо на сайте.",
+            miaInstruction: "Нажмите кнопку ниже для моментального списания и активации VIP статуса на платформе:",
+            proModalBtn: "Оплатить 199 MDL внутри сайта",
             closeBtn: "Закрыть",
             vipBadge: "VIP 👑 (5%)",
-            secureLabel: "🔒 Деньги на гарантии",
-            cashLabel: "🤝 На честное слово / На месте",
-            fundsSecureLabel: "🛡️ Безопасная сделка (Гарантия)",
-            fundsSecureYes: "Внесено на платформу (Гарантия)",
-            fundsSecureNo: "Оплата мастеру напрямую (На месте)",
-            fundsDesc: "Деньги зарезервированы на счете платформы и будут выплачены мастеру после подтверждения работы.",
-            fundsDescNo: "Оплата производится напрямую исполнителю после выполнения заказа.",
+            secureLabel: "🔒 Гарантия платформы",
+            cashLabel: "🤝 Оплата на месте",
+            fundsSecureLabel: "🛡️ Безопасная сделка",
+            fundsSecureYes: "Средства зарезервированы на счете",
+            fundsSecureNo: "Ожидает оплаты на гарантию",
+            fundsDesc: "Деньги зарезервированы на счете платформы и будут выплачены после выполнения.",
+            fundsDescNo: "Средства не внесены. Нажмите кнопку ниже для безопасной оплаты.",
+            btnPayEscrow: "Внести бюджет на гарантию платформы",
             clientLabel: "Заказчик:",
             districtLabel: "Сектор:",
-            btnContactClient: "Связаться с заказчиком",
-            secureCheckLabel: "Заморозить средства на гарантии платформы",
+            btnContactClient: "Связаться в Telegram",
             districts: ["Все секторы", "Центр (Centru)", "Рышкановка (Râșcani)", "Ботаника (Botanica)", "Чеканы (Ciocana)", "Буюканы (Buiucani)"]
         },
         ro: {
@@ -260,22 +270,22 @@
             phPrice: "400",
             phDesc: "Detalii despre sarcină...",
             proModalTitle: "Activare statut VIP (199 MDL)",
-            proModalDesc: "Beneficiați de comision exclusiv de doar 5% și prioritate prin MIA.",
-            miaInstruction: "Transferați 199 MDL la numărul de telefon:",
-            proModalBtn: "Plătește prin MIA / Card",
+            proModalDesc: "Plată instantanee prin sistemul MIA direct pe site.",
+            miaInstruction: "Apăsați butonul de mai jos pentru plată și activarea statutului VIP:",
+            proModalBtn: "Plătește 199 MDL pe site",
             closeBtn: "Închide",
             vipBadge: "VIP 👑 (5%)",
-            secureLabel: "🔒 Bani la garanție",
-            cashLabel: "🤝 La fața locului / Încredere",
-            fundsSecureLabel: "🛡️ Tranzacție securizată (Garanție)",
-            fundsSecureYes: "Depus pe platformă (Garanție)",
-            fundsSecureNo: "Plată directă către meșter",
-            fundsDesc: "Banii sunt rezervați în contul platformei și vor fi achitați meșterului după finalizare.",
-            fundsDescNo: "Plata se face direct executantului după finalizarea lucrării.",
+            secureLabel: "🔒 Garanția platformei",
+            cashLabel: "🤝 Plată la fața locului",
+            fundsSecureLabel: "🛡️ Tranzacție securizată",
+            fundsSecureYes: "Fonduri rezervate în cont",
+            fundsSecureNo: "În așteptarea plății",
+            fundsDesc: "Banii sunt blocați în siguranță în contul platformei până la finalizare.",
+            fundsDescNo: "Fondurile nu sunt depuse. Apăsați butonul pentru plată sigură.",
+            btnPayEscrow: "Depune bugetul în garanția platformei",
             clientLabel: "Client:",
             districtLabel: "Sector:",
-            btnContactClient: "Contactează clientul",
-            secureCheckLabel: "Blochează fondurile cu garanția platformei",
+            btnContactClient: "Contactează pe Telegram",
             districts: ["Toate sectoarele", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         },
         en: {
@@ -294,22 +304,22 @@
             phPrice: "400",
             phDesc: "Task details...",
             proModalTitle: "Activate VIP Status (199 MDL)",
-            proModalDesc: "Get an exclusive 5% commission and top priority via MIA payments.",
-            miaInstruction: "Transfer 199 MDL to phone number:",
-            proModalBtn: "Pay via MIA / Card",
+            proModalDesc: "Instant payment via MIA right on the website.",
+            miaInstruction: "Click the button below to instantly pay and activate VIP status:",
+            proModalBtn: "Pay 199 MDL on site",
             closeBtn: "Close",
             vipBadge: "VIP 👑 (5%)",
             secureLabel: "🔒 Escrow Protected",
-            cashLabel: "🤝 Direct / Cash",
-            fundsSecureLabel: "🛡️ Secure Transaction (Escrow)",
-            fundsSecureYes: "Deposited on platform",
-            fundsSecureNo: "Direct payment to master",
-            fundsDesc: "Funds are securely held by the platform and released upon completion.",
-            fundsDescNo: "Payment is made directly to the service provider after completion.",
+            cashLabel: "🤝 Direct Payment",
+            fundsSecureLabel: "🛡️ Secure Transaction",
+            fundsSecureYes: "Funds reserved in escrow",
+            fundsSecureNo: "Awaiting escrow deposit",
+            fundsDesc: "Funds are securely held in platform escrow until completion.",
+            fundsDescNo: "Funds not deposited. Click below for secure payment.",
+            btnPayEscrow: "Deposit budget to platform escrow",
             clientLabel: "Client:",
             districtLabel: "District:",
-            btnContactClient: "Contact Client",
-            secureCheckLabel: "Hold funds securely on platform escrow",
+            btnContactClient: "Contact via Telegram",
             districts: ["All districts", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         },
         it: {
@@ -328,22 +338,22 @@
             phPrice: "400",
             phDesc: "Dettagli del compito...",
             proModalTitle: "Attiva Stato VIP (199 MDL)",
-            proModalDesc: "Ottieni una commissione esclusiva del 5% e priorità tramite MIA.",
-            miaInstruction: "Trasferisci 199 MDL al numero di telefono:",
-            proModalBtn: "Paga tramite MIA / Carta",
+            proModalDesc: "Pagamento istantaneo tramite MIA direttamente sul sito.",
+            miaInstruction: "Clicca sul pulsante per pagare e attivare lo status VIP:",
+            proModalBtn: "Paga 199 MDL sul sito",
             closeBtn: "Chiudi",
             vipBadge: "VIP 👑 (5%)",
             secureLabel: "🔒 Fondi protetti",
             cashLabel: "🤝 Pagamento diretto",
-            fundsSecureLabel: "🛡️ Transazione Sicura (Garanzia)",
-            fundsSecureYes: "Depositato sulla piattaforma",
-            fundsSecureNo: "Pagamento diretto al professionista",
-            fundsDesc: "I fondi sono trattenuti dalla piattaforma e rilasciati a lavoro completato.",
-            fundsDescNo: "Il pagamento viene effettuato direttamente al professionista al completamento.",
+            fundsSecureLabel: "🛡️ Transazione Sicura",
+            fundsSecureYes: "Fondi riservati in garanzia",
+            fundsSecureNo: "In attesa di deposito",
+            fundsDesc: "I fondi sono trattenuti al sicuro nel conto della piattaforma fino al completamento.",
+            fundsDescNo: "Fondi non depositati. Clicca sotto per il pagamento sicuro.",
+            btnPayEscrow: "Deposita budget in garanzia",
             clientLabel: "Cliente:",
             districtLabel: "Quartiere:",
-            btnContactClient: "Contatta il cliente",
-            secureCheckLabel: "Trieni i fondi al sicuro sulla piattaforma",
+            btnContactClient: "Contatta su Telegram",
             districts: ["Tutti i quartieri", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         }
     };
@@ -399,7 +409,7 @@
                 <p class="text-xs text-gray-600 line-clamp-1">${item.desc}</p>
                 <div class="flex items-center justify-between text-[11px] text-gray-500 pt-1">
                     <span>👤 ${item.client} <span class="text-amber-500 font-semibold">⭐ ${item.clientRating}</span></span>
-                    <span class="${item.secureFunds ? 'text-emerald-700 font-semibold' : 'text-gray-500'}">${item.secureFunds ? t.secureLabel : t.cashLabel}</span>
+                    <span class="${item.secureFunds ? 'text-emerald-700 font-semibold' : 'text-amber-600 font-semibold'}">${item.secureFunds ? t.secureLabel : t.cashLabel}</span>
                 </div>
                 <div class="flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-50">
                     <span>📍 ${item.district}</span>
@@ -433,8 +443,23 @@
         document.getElementById('modal-client-rating').textContent = item.clientRating;
         
         const fundsSpan = document.getElementById('modal-task-funds');
-        fundsSpan.textContent = item.secureFunds ? t.fundsSecureYes : t.fundsSecureNo;
-        fundsSpan.className = item.secureFunds ? 'text-emerald-700 font-bold' : 'text-gray-600 font-semibold';
+        const descText = document.getElementById('escrow-desc-text');
+        const payBtn = document.getElementById('pay-escrow-btn');
+        const escrowBox = document.getElementById('escrow-box');
+
+        if (item.secureFunds) {
+            fundsSpan.textContent = t.fundsSecureYes;
+            fundsSpan.className = 'text-emerald-700 font-bold';
+            descText.textContent = t.fundsDesc;
+            escrowBox.className = 'bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-2';
+            payBtn.classList.add('hidden');
+        } else {
+            fundsSpan.textContent = t.fundsSecureNo;
+            fundsSpan.className = 'text-amber-700 font-bold';
+            descText.textContent = t.fundsDescNo;
+            escrowBox.className = 'bg-amber-50 border border-amber-200 p-3 rounded-xl space-y-2';
+            payBtn.classList.remove('hidden');
+        }
 
         document.getElementById('task-modal').classList.remove('hidden');
     }
@@ -452,7 +477,6 @@
         const district = document.getElementById('new-district').value;
         const price = Number(document.getElementById('new-price').value);
         const desc = document.getElementById('new-desc').value.trim();
-        const secureFunds = document.getElementById('new-secure').checked;
 
         if (!title || !price) {
             alert('Заполните название и бюджет!');
@@ -467,8 +491,8 @@
             price,
             desc: desc || 'Без описания',
             vip: true,
-            secureFunds,
-            client: "Вы (Мастер/Клиент)",
+            secureFunds: false,
+            client: "Вы (Клиент)",
             clientRating: 5.0
         });
 
@@ -480,14 +504,40 @@
         document.getElementById('new-desc').value = '';
     }
 
-    function contactClient() {
-        alert('Переход в чат Telegram с заказчиком заказа.');
-        closeTaskModal();
+    // ==========================================
+    // ФУНКЦИИ РЕАЛЬНЫХ ПЛАТЕЖНЫХ ЗАПРОСОВ (API)
+    // ==========================================
+    function payTaskRealGateway() {
+        const item = tasksList.find(t => t.id === activeTaskId);
+        if (!item) return;
+
+        // Здесь в будущем будет реальный fetch-запрос к вашему бэкенду или платежному шлюзу банка:
+        // fetch('/api/create-payment', { method: 'POST', body: JSON.stringify({ amount: item.price, merchant: PAYMENT_CONFIG.merchantId }) })
+        
+        console.log(`Запрос платежа на сумму ${item.price} ${PAYMENT_CONFIG.currency} через мерчант ${PAYMENT_CONFIG.merchantId}`);
+        
+        // Эмуляция успешного ответа от платежного шлюза банка
+        setTimeout(() => {
+            item.secureFunds = true;
+            alert(`[API Sandbox]: Платеж на ${item.price} MDL успешно проведен через систему MIA! Средства зарезервированы.`);
+            openTaskModal(activeTaskId);
+            renderTasks(tasksList);
+        }, 500);
     }
 
-    function payViaMia() {
-        window.open('https://m-pay.gov.md', '_blank'); 
-        closeProModal();
+    function payVipRealGateway() {
+        // Запрос на оплату 199 MDL за VIP-статус и комиссию 5% на ваш счет
+        console.log(`Запрос VIP статуса на номер ${PAYMENT_CONFIG.miaPhone} с комиссией ${PAYMENT_CONFIG.commissionRate * 100}%`);
+
+        setTimeout(() => {
+            alert(`[API Sandbox]: Оплата 199 MDL за VIP статус успешно поступила на счет ${PAYMENT_CONFIG.miaPhone}! Статус активирован.`);
+            closeProModal();
+        }, 500);
+    }
+
+    function contactClient() {
+        alert('Открытие чата с заказчиком в Telegram.');
+        closeTaskModal();
     }
 
     renderTasks(tasksList);
