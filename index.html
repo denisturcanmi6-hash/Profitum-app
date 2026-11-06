@@ -8,12 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col font-sans text-gray-800 relative selection:bg-emerald-500 selection:text-white">
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans text-gray-800">
 
-<!-- Header -->
 <header class="bg-white/90 backdrop-blur-md shadow-sm border-b sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div class="flex items-center space-x-2 cursor-pointer">
+        <div class="flex items-center space-x-2">
             <div class="bg-gradient-to-tr from-amber-500 to-emerald-600 text-white p-2 rounded-lg font-bold text-xl flex items-center justify-center w-9 h-9 shadow-md">
                 <i class="fa-solid fa-gem"></i>
             </div>
@@ -31,134 +30,73 @@
                 <option value="it">🇮🇹 IT</option>
             </select>
 
-            <button onclick="openCreateModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-2 rounded-lg text-xs sm:text-sm transition flex items-center shadow-sm">
+            <button onclick="alert('Создание задания')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-2 rounded-lg text-xs transition flex items-center shadow-sm">
                 <i class="fa-solid fa-plus mr-1"></i><span data-i18n="createBtn">Создать</span>
             </button>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full relative z-10">
-    <section id="section-tasks" class="space-y-6">
-        <!-- PRO Banner -->
+<main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+    <div class="space-y-6">
         <div class="bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-amber-500/10 p-4 rounded-xl border border-amber-200/60 shadow-sm flex items-center justify-between">
-            <div class="space-y-1">
+            <div>
                 <span class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded font-bold">PRO 👑</span>
-                <h4 class="font-bold text-gray-900 text-sm" data-i18n="proTitle">Вы мастер в Кишиневе?</h4>
-                <p class="text-xs text-gray-600" data-i18n="proDesc">Подключите PRO-аккаунт (199 MDL), чтобы быть в топе и получать больше заказов!</p>
+                <h4 class="font-bold text-gray-900 text-sm mt-1" data-i18n="proTitle">Вы мастер в Кишиневе?</h4>
+                <p class="text-xs text-gray-600" data-i18n="proDesc">Подключите PRO-аккаунт (199 MDL) для доступа к заказам!</p>
             </div>
-            <button onclick="alert('Переход к оплате PRO-статуса (199 MDL)')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition whitespace-nowrap">
+            <button onclick="alert('PRO статус')" class="bg-amber-500 text-white text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap">
                 <span data-i18n="proBtn">Подключить</span>
             </button>
         </div>
 
-        <!-- Filters -->
-        <div class="bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-3">
-            <div class="relative flex-grow">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-gray-400"></i>
-                <input type="text" id="search-input" onkeyup="filterTasks()" placeholder="Поиск по заданиям..." data-i18n-placeholder="searchPlaceholder" class="w-full pl-9 pr-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 border-gray-200">
-            </div>
-            <div class="flex gap-2">
-                <select id="filter-district" onchange="filterTasks()" class="border rounded-lg text-sm px-3 py-2.5 bg-white border-gray-200 focus:outline-none">
-                    <option value="">Все секторы</option>
-                    <option value="Центр (Centru)">Центр (Centru)</option>
-                    <option value="Рышкановка (Râșcani)">Рышкановка (Râșcani)</option>
-                    <option value="Ботаника (Botanica)">Ботаника (Botanica)</option>
-                    <option value="Чеканы (Ciocana)">Чеканы (Ciocana)</option>
-                    <option value="Буюканы (Buiucani)">Буюканы (Buiucani)</option>
-                </select>
-            </div>
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex gap-3">
+            <input type="text" id="search-input" onkeyup="filterTasks()" placeholder="Поиск по заданиям..." data-i18n-placeholder="searchPlaceholder" class="w-full px-3 py-2 border rounded-lg text-sm border-gray-200 focus:outline-none">
+            <select id="filter-district" onchange="filterTasks()" class="border rounded-lg text-sm px-3 py-2 bg-white border-gray-200">
+                <option value="">Все секторы</option>
+                <option value="Центр (Centru)">Центр (Centru)</option>
+                <option value="Рышкановка (Râșcani)">Рышкановка (Râșcani)</option>
+                <option value="Ботаника (Botanica)">Ботаника (Botanica)</option>
+                <option value="Чеканы (Ciocana)">Чеканы (Ciocana)</option>
+                <option value="Буюканы (Buiucani)">Буюканы (Buiucani)</option>
+            </select>
         </div>
 
-        <!-- Tasks Container -->
         <div id="tasks-container" class="space-y-4"></div>
-    </section>
+    </div>
 </main>
 
-<!-- JavaScript Logic -->
 <script>
     const tg = window.Telegram?.WebApp;
     if (tg) { tg.expand(); }
 
-    let currentLang = 'ru';
     let tasksList = [
-        { id: 1, title: "Починить смеситель в ванной", category: "Бытовой ремонт", district: "Центр (Centru)", price: 300, desc: "Нужно заменить картридж в однорычажном смесителе." },
-        { id: 2, title: "Генеральная уборка квартиры 2к", category: "Уборка", district: "Ботаника (Botanica)", price: 800, desc: "Требуется влажная уборка всех поверхностей и мытье окон." }
+        { id: 1, title: "Починить смеситель в ванной", category: "Бытовой ремонт", district: "Центр (Centru)", price: 300, desc: "Нужно заменить картридж." },
+        { id: 2, title: "Генеральная уборка квартиры 2к", category: "Уборка", district: "Ботаника (Botanica)", price: 800, desc: "Влажная уборка всех комнат." }
     ];
 
     const translations = {
-        ru: {
-            createBtn: "Создать",
-            searchPlaceholder: "Поиск по заданиям...",
-            proTitle: "Вы мастер в Кишиневе?",
-            proDesc: "Подключите PRO-аккаунт (199 MDL), чтобы быть в топе и получать больше заказов!",
-            proBtn: "Подключить",
-            districts: ["Все секторы", "Центр (Centru)", "Рышкановка (Râșcani)", "Ботаника (Botanica)", "Чеканы (Ciocana)", "Буюканы (Buiucani)"]
-        },
-        ro: {
-            createBtn: "Creează",
-            searchPlaceholder: "Caută sarcini...",
-            proTitle: "Ești meșter în Chișinău?",
-            proDesc: "Activează contul PRO (199 MDL) pentru a fi în top și a primi mai multe comenzi!",
-            proBtn: "Activează",
-            districts: ["Toate sectoarele", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
-        },
-        en: {
-            createBtn: "Create",
-            searchPlaceholder: "Search tasks...",
-            proTitle: "Are you a master in Chisinau?",
-            proDesc: "Activate a PRO account (199 MDL) to stay on top and get more orders!",
-            proBtn: "Activate",
-            districts: ["All districts", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
-        },
-        it: {
-            createBtn: "Crea",
-            searchPlaceholder: "Cerca compiti...",
-            proTitle: "Sei un professionista a Chișinău?",
-            proDesc: "Attiva l'account PRO (199 MDL) per essere in cima e ricevere più ordini!",
-            proBtn: "Attiva",
-            districts: ["Tutti i quartieri", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
-        }
+        ru: { createBtn: "Создать", searchPlaceholder: "Поиск по заданиям...", proTitle: "Вы мастер в Кишиневе?", proDesc: "Подключите PRO-аккаунт (199 MDL) для доступа к заказам!", proBtn: "Подключить" },
+        ro: { createBtn: "Creează", searchPlaceholder: "Caută sarcini...", proTitle: "Ești meșter în Chișinău?", proDesc: "Activează contul PRO (199 MDL) pentru comenzi!", proBtn: "Activează" },
+        en: { createBtn: "Create", searchPlaceholder: "Search tasks...", proTitle: "Are you a master in Chisinau?", proDesc: "Activate PRO account (199 MDL) for orders!", proBtn: "Activate" },
+        it: { createBtn: "Crea", searchPlaceholder: "Cerca compiti...", proTitle: "Sei un professionista a Chișinău?", proDesc: "Attiva l'account PRO (199 MDL) per gli ordini!", proBtn: "Attiva" }
     };
 
     function changeLanguage(lang) {
-        currentLang = lang;
         const t = translations[lang] || translations.ru;
-
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (t[key]) el.textContent = t[key];
         });
-
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
             const key = el.getAttribute('data-i18n-placeholder');
             if (t[key]) el.placeholder = t[key];
         });
-
-        const filterDistrict = document.getElementById('filter-district');
-        if (filterDistrict && t.districts) {
-            const currentVal = filterDistrict.value;
-            filterDistrict.innerHTML = `
-                <option value="">${t.districts[0]}</option>
-                <option value="Центр (Centru)">${t.districts[1]}</option>
-                <option value="Рышкановка (Râșcani)">${t.districts[2]}</option>
-                <option value="Ботаника (Botanica)">${t.districts[3]}</option>
-                <option value="Чеканы (Ciocana)">${t.districts[4]}</option>
-                <option value="Буюканы (Buiucani)">${t.districts[5]}</option>
-            `;
-            filterDistrict.value = currentVal;
-        }
-
         renderTasks(tasksList);
     }
 
     function renderTasks(tasks) {
         const container = document.getElementById('tasks-container');
-        if (!tasks.length) {
-            container.innerHTML = `<div class="text-center py-10 bg-white rounded-xl border border-gray-100"><p class="text-gray-500 text-sm">Нет заданий</p></div>`;
-            return;
-        }
         container.innerHTML = tasks.map(item => `
             <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2">
                 <div class="flex justify-between items-start">
@@ -177,18 +115,11 @@
     function filterTasks() {
         const query = document.getElementById('search-input').value.toLowerCase();
         const district = document.getElementById('filter-district').value;
-        
-        const filtered = tasksList.filter(item => {
-            const matchesQuery = item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query);
-            const matchesDistrict = !district || item.district === district;
-            return matchesQuery && matchesDistrict;
-        });
-        
+        const filtered = tasksList.filter(item => 
+            (item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)) &&
+            (!district || item.district === district)
+        );
         renderTasks(filtered);
-    }
-
-    function openCreateModal() {
-        alert('Функция создания задания');
     }
 
     renderTasks(tasksList);
