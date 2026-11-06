@@ -41,12 +41,12 @@
 <!-- Main Content -->
 <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
     <div class="space-y-6">
-        <!-- PRO Banner -->
+        <!-- PRO / VIP Banner -->
         <div class="bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-amber-500/10 p-4 rounded-xl border border-amber-200/60 shadow-sm flex items-center justify-between">
             <div>
-                <span class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded font-bold">PRO 👑</span>
+                <span class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded font-bold">VIP 👑 (5%)</span>
                 <h4 class="font-bold text-gray-900 text-sm mt-1" data-i18n="proTitle">Вы мастер в Кишиневе?</h4>
-                <p class="text-xs text-gray-600" data-i18n="proDesc">Подключите PRO-аккаунт (199 MDL) для доступа к заказам!</p>
+                <p class="text-xs text-gray-600" data-i18n="proDesc">Подключите VIP статус (199 MDL) со сниженной комиссией 5%!</p>
             </div>
             <button onclick="openProModal()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap shadow-sm">
                 <span data-i18n="proBtn">Подключить</span>
@@ -108,14 +108,26 @@
     </div>
 </div>
 
-<!-- Modal: PRO Status -->
+<!-- Modal: VIP Status & MIA Payment -->
 <div id="pro-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl text-center">
         <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">👑</div>
-        <h3 class="font-bold text-lg text-gray-900" data-i18n="proModalTitle">Активация PRO (199 MDL)</h3>
-        <p class="text-xs text-gray-600" data-i18n="proModalDesc">Получайте заказы первыми и выведите профиль в топ Кишинева.</p>
-        <button onclick="activatePro()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm" data-i18n="proModalBtn">Оплатить через MIA / Карту</button>
-        <button onclick="closeProModal()" class="text-xs text-gray-400 hover:text-gray-600 mt-2" data-i18n="closeBtn">Закрыть</button>
+        <h3 class="font-bold text-lg text-gray-900" data-i18n="proModalTitle">Активация VIP статус (199 MDL)</h3>
+        <p class="text-xs text-gray-600" data-i18n="proModalDesc">Получите эксклюзивную комиссию всего 5% и приоритет в заказах через систему MIA.</p>
+        
+        <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-left space-y-1">
+            <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">⚡ MIA Instant Payments</span>
+            <p class="text-xs text-gray-700" data-i18n="miaInstruction">Переведите 199 MDL по номеру телефона:</p>
+            <div class="font-mono font-bold text-emerald-800 text-sm bg-white p-2 rounded border border-emerald-100 text-center">
+                +373 60 000 000 (Profitum SRL)
+            </div>
+        </div>
+
+        <button onclick="payViaMia()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-bolt"></i>
+            <span data-i18n="proModalBtn">Оплатить через MIA / Карту</span>
+        </button>
+        <button onclick="closeProModal()" class="text-xs text-gray-400 hover:text-gray-600 mt-2 block w-full" data-i18n="closeBtn">Закрыть</button>
     </div>
 </div>
 
@@ -126,8 +138,8 @@
     let currentLang = 'ru';
     
     let tasksList = [
-        { id: 1, title: "Починить смеситель в ванной", category: "Бытовой ремонт", district: "Centru", price: 300, desc: "Нужно заменить картридж." },
-        { id: 2, title: "Генеральная уборка квартиры 2к", category: "Уборка", district: "Botanica", price: 800, desc: "Влажная уборка всех комнат." }
+        { id: 1, title: "Починить смеситель в ванной", category: "Бытовой ремонт", district: "Centru", price: 300, desc: "Нужно заменить картридж.", vip: true },
+        { id: 2, title: "Генеральная уборка квартиры 2к", category: "Уборка", district: "Botanica", price: 800, desc: "Влажная уборка всех комнат.", vip: false }
     ];
 
     const translations = {
@@ -135,7 +147,7 @@
             createBtn: "Создать",
             searchPlaceholder: "Поиск по заданиям...",
             proTitle: "Вы мастер в Кишиневе?",
-            proDesc: "Подключите PRO-аккаунт (199 MDL) для доступа к заказам!",
+            proDesc: "Подключите VIP статус (199 MDL) со сниженной комиссией 5%!",
             proBtn: "Подключить",
             modalTaskTitle: "Новое задание",
             labelTitle: "Название",
@@ -146,17 +158,19 @@
             phTitle: "Например: Ремонт розетки",
             phPrice: "400",
             phDesc: "Детали задачи...",
-            proModalTitle: "Активация PRO (199 MDL)",
-            proModalDesc: "Получайте заказы первыми и выведите профиль в топ Кишинева.",
+            proModalTitle: "Активация VIP статуса (199 MDL)",
+            proModalDesc: "Получите эксклюзивную комиссию всего 5% и приоритет в заказах через систему MIA.",
+            miaInstruction: "Переведите 199 MDL по номеру телефона:",
             proModalBtn: "Оплатить через MIA / Карту",
             closeBtn: "Закрыть",
+            vipBadge: "VIP 👑 (5%)",
             districts: ["Все секторы", "Центр (Centru)", "Рышкановка (Râșcani)", "Ботаника (Botanica)", "Чеканы (Ciocana)", "Буюканы (Buiucani)"]
         },
         ro: {
             createBtn: "Creează",
             searchPlaceholder: "Caută sarcini...",
             proTitle: "Ești meșter în Chișinău?",
-            proDesc: "Activează contul PRO (199 MDL) pentru comenzi!",
+            proDesc: "Activează statutul VIP (199 MDL) cu comision redus de 5%!",
             proBtn: "Activează",
             modalTaskTitle: "Sarcină nouă",
             labelTitle: "Titlu",
@@ -167,17 +181,19 @@
             phTitle: "Exemplu: Reparare priză",
             phPrice: "400",
             phDesc: "Detalii despre sarcină...",
-            proModalTitle: "Activare PRO (199 MDL)",
-            proModalDesc: "Primiți comenzi primii și urcați în topul Chișinăului.",
+            proModalTitle: "Activare statut VIP (199 MDL)",
+            proModalDesc: "Beneficiați de comision exclusiv de doar 5% și prioritate prin MIA.",
+            miaInstruction: "Transferați 199 MDL la numărul de telefon:",
             proModalBtn: "Plătește prin MIA / Card",
             closeBtn: "Închide",
+            vipBadge: "VIP 👑 (5%)",
             districts: ["Toate sectoarele", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         },
         en: {
             createBtn: "Create",
             searchPlaceholder: "Search tasks...",
             proTitle: "Are you a master in Chisinau?",
-            proDesc: "Activate PRO account (199 MDL) for orders!",
+            proDesc: "Activate VIP status (199 MDL) with a reduced 5% commission!",
             proBtn: "Activate",
             modalTaskTitle: "New Task",
             labelTitle: "Title",
@@ -188,17 +204,19 @@
             phTitle: "Example: Fix socket",
             phPrice: "400",
             phDesc: "Task details...",
-            proModalTitle: "Activate PRO (199 MDL)",
-            proModalDesc: "Get orders first and boost your profile in Chisinau.",
+            proModalTitle: "Activate VIP Status (199 MDL)",
+            proModalDesc: "Get an exclusive 5% commission and top priority via MIA payments.",
+            miaInstruction: "Transfer 199 MDL to phone number:",
             proModalBtn: "Pay via MIA / Card",
             closeBtn: "Close",
+            vipBadge: "VIP 👑 (5%)",
             districts: ["All districts", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         },
         it: {
             createBtn: "Crea",
             searchPlaceholder: "Cerca compiti...",
             proTitle: "Sei un professionista a Chișinău?",
-            proDesc: "Attiva l'account PRO (199 MDL) per gli ordini!",
+            proDesc: "Attiva lo status VIP (199 MDL) con una commissione ridotta del 5%!",
             proBtn: "Attiva",
             modalTaskTitle: "Nuovo Compito",
             labelTitle: "Titolo",
@@ -209,10 +227,12 @@
             phTitle: "Esempio: Riparazione presa",
             phPrice: "400",
             phDesc: "Dettagli del compito...",
-            proModalTitle: "Attiva PRO (199 MDL)",
-            proModalDesc: "Ricevi ordini per primo e sali in cima a Chișinău.",
+            proModalTitle: "Attiva Stato VIP (199 MDL)",
+            proModalDesc: "Ottieni una commissione esclusiva del 5% e priorità tramite MIA.",
+            miaInstruction: "Trasferisci 199 MDL al numero di telefono:",
             proModalBtn: "Paga tramite MIA / Carta",
             closeBtn: "Chiudi",
+            vipBadge: "VIP 👑 (5%)",
             districts: ["Tutti i quartieri", "Centru", "Râșcani", "Botanica", "Ciocana", "Buiucani"]
         }
     };
@@ -252,15 +272,17 @@
     }
 
     function renderTasks(tasks) {
+        const t = translations[currentLang] || translations.ru;
         const container = document.getElementById('tasks-container');
         if (!tasks.length) {
             container.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">Нет заданий</div>`;
             return;
         }
         container.innerHTML = tasks.map(item => `
-            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2">
+            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2 relative overflow-hidden">
+                ${item.vip ? `<div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">${t.vipBadge}</div>` : ''}
                 <div class="flex justify-between items-start">
-                    <h3 class="font-bold text-gray-900 text-sm">${item.title}</h3>
+                    <h3 class="font-bold text-gray-900 text-sm pr-12">${item.title}</h3>
                     <span class="font-bold text-emerald-600 text-sm">${item.price} MDL</span>
                 </div>
                 <p class="text-xs text-gray-600">${item.desc}</p>
@@ -305,7 +327,8 @@
             category: 'Услуги',
             district,
             price,
-            desc: desc || 'Без описания'
+            desc: desc || 'Без описания',
+            vip: true // Новые созданные задания получают VIP-статус и 5% комиссию
         });
 
         renderTasks(tasksList);
@@ -316,8 +339,8 @@
         document.getElementById('new-desc').value = '';
     }
 
-    function activatePro() {
-        alert('Переход на оплату 199 MDL через систему MIA / Карту');
+    function payViaMia() {
+        window.open('https://m-pay.gov.md', '_blank'); 
         closeProModal();
     }
 
