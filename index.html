@@ -758,3 +758,48 @@
     </script>
 </body>
 </html>
+// 1. Получаем данные текущего пользователя из Telegram WebApp
+const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+
+if (tgUser) {
+    // А) Автоматически регистрируем гостя в таблице profiles при входе
+    async function registerGuest() {
+        const { error } = await supabase
+            .from('profiles')
+            .upsert([
+                {
+                    telegram_id: tgUser.id,
+                    username: tgUser.username || '',
+                    first_name: tgUser.first_name || 'Гость'
+                }
+            ], { onConflict: 'telegram_id' });
+
+        if (error) console.error('Ошибка сохранения профиля:', error);
+    }
+    registerGuest();
+}
+
+// Б) Функция автозаполнения полей при открытии формы создания объявления
+async function autofillTaskForm() {
+    if (!tgUser) return;
+
+    // Подставляем username в поле ввода (замените 'username' на ID вашего HTML-инпутов)
+    const usernameInput = document.getElementById('username'); 
+    if (usernameInput) {
+        usernameInput.value = tgUser.username ? `@${tgUser.username}` : tgUser.first_name;
+    }
+
+    // Подтягиваем сохраненный телефон из базы profiles
+    const { data } = await supabase
+        .from('profiles')
+        .select('phone')
+        .eq('telegram_id', tgUser.id)
+        .single();
+
+    if (data && data.phone) {
+        const phoneInput = document.getElementById('phone'); // Замените 'phone' на ID поля телефона
+        if (phoneInput) {
+            phoneInput.value = data.phone;
+        }
+    }
+}
