@@ -59,7 +59,7 @@
                         <span id="vipBadgeText">🛡️ ᛟ Гарантия 5% (Предоплата)</span>
                     </div>
                     <h2 id="vipTitle" class="text-xs font-bold text-gray-900 mb-0.5">Безопасные сделки и Эскроу</h2>
-                    <p id="vipDesc" class="text-[11px] text-gray-600 leading-snug">Деньги перечисляются мастеру только после проверки фотоотчета о выполненной работе.</p>
+                    <p id="vipDesc" class="text-[11px] text-gray-600 leading-snug">Деньги перечисляются мастеру только после выполнения работы.</p>
                 </div>
                 <button onclick="openVipModal()" id="vipBtn" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-md shadow-amber-500/30 transition whitespace-nowrap ml-2">
                     VIP 199 MDL
@@ -178,7 +178,7 @@
         </div>
     </div>
 
-    <!-- Модальное окно создания задания с фото -->
+    <!-- Модальное окно создания задания -->
     <div id="createModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -247,11 +247,6 @@
                     <textarea id="taskDesc" rows="2" placeholder="Детали задачи..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-emerald-500"></textarea>
                 </div>
 
-                <div>
-                    <label id="lblTaskPhoto" class="text-[11px] font-semibold text-gray-700 block mb-1">Фото проблемы / объекта от заказчика</label>
-                    <input type="file" id="taskPhotoFile" accept="image/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
-                </div>
-
                 <div class="flex items-center space-x-2 pt-1">
                     <input type="checkbox" id="taskPrepay" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
                     <label for="taskPrepay" id="lblTaskPrepay" class="text-[11px] text-gray-600">С предоплатой (гарантия 5%)</label>
@@ -261,26 +256,6 @@
                     Опубликовать
                 </button>
             </form>
-        </div>
-    </div>
-
-    <!-- Модальное окно загрузки фотоотчета мастера -->
-    <div id="reportModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                <h3 class="font-bold text-sm text-gray-900">📸 Фотоотчет мастера (Сдача работы)</h3>
-                <button onclick="closeReportModal()" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
-            </div>
-            <p class="text-xs text-gray-500 leading-relaxed">Загрузите фотографию готовой работы. Заказчик и администрация увидят отчет для подтверждения выплаты средств.</p>
-            
-            <input type="hidden" id="reportTaskId">
-            <div>
-                <input type="file" id="reportPhotoFile" accept="image/*" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
-            </div>
-
-            <button onclick="submitTaskReport()" id="reportSubmitBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs py-3 rounded-xl shadow-md transition">
-                📤 Отправить отчет на проверку
-            </button>
         </div>
     </div>
 
@@ -308,7 +283,6 @@
     <!-- Скрипты -->
     <script>
         const SUPABASE_URL = "https://xudwyqmpucmqgjjpbgll.supabase.co";
-        // Используем универсальный ключ доступа для работы со стандартом проекта
         const SUPABASE_ANON_KEY = "Sb_publishable_dxJStXW9jVQ4XUZE_J5Umw_jNr2Vw8h";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -325,7 +299,7 @@
                 flag: "🇷🇺 RU ↕",
                 vipBadgeText: "🛡️ ᛟ Гарантия 5% (Предоплата)",
                 vipTitle: "Безопасные сделки и Эскроу",
-                vipDesc: "Деньги перечисляются мастеру только после проверки фотоотчета о выполненной работе.",
+                vipDesc: "Деньги перечисляются мастеру только после выполнения работы.",
                 vipBtn: "VIP 199 MDL",
                 searchPlaceholder: "Поиск по заданиям...",
                 optAllChisinau: "🏙️ Кишинев (Все)",
@@ -335,8 +309,6 @@
                 createBtn: "+ Создать",
                 noTasks: "Нет активных заданий в базе",
                 respondBtn: "Откликнуться / Связаться",
-                reportBtn: "📸 Сдать работу (Фотоотчет)",
-                statusPending: "⏳ На проверке по фото",
                 vipTaskBadge: "👑 VIP-ЗАКАЗ (ПРИОРИТЕТ)",
                 prepayLabel: "🔒 С предоплатой (Гарантия 5%)"
             },
@@ -344,7 +316,7 @@
                 flag: "🇷🇴 RO ↕",
                 vipBadgeText: "🛡️ ᛟ Garanție 5% (Avans)",
                 vipTitle: "Tranzacții sigure",
-                vipDesc: "Banii sunt transferați meșterului doar după verificarea raportului foto.",
+                vipDesc: "Banii sunt transferați meșterului doar după finalizarea lucrării.",
                 vipBtn: "VIP 199 MDL",
                 searchPlaceholder: "Caută sarcini...",
                 optAllChisinau: "🏙️ Chișinău (Toate)",
@@ -354,8 +326,6 @@
                 createBtn: "+ Creează",
                 noTasks: "Nu există sarcini active",
                 respondBtn: "Aplicați / Contactează",
-                reportBtn: "📸 Predă lucrarea (Raport foto)",
-                statusPending: "⏳ În verificare foto",
                 vipTaskBadge: "👑 COMANDĂ VIP (PRIORITATE)",
                 prepayLabel: "🔒 Cu avans (Garanție 5%)"
             },
@@ -363,7 +333,7 @@
                 flag: "🇬🇧 EN ↕",
                 vipBadgeText: "🛡️ ᛟ 5% Guarantee (Prepay)",
                 vipTitle: "Secure Deals & Escrow",
-                vipDesc: "Funds are released to the master only after photo report verification.",
+                vipDesc: "Funds are released to the master only after task completion.",
                 vipBtn: "VIP 199 MDL",
                 searchPlaceholder: "Search tasks...",
                 optAllChisinau: "🏙️ Chisinau (All)",
@@ -373,8 +343,6 @@
                 createBtn: "+ Create",
                 noTasks: "No active tasks in database",
                 respondBtn: "Apply / Contact client",
-                reportBtn: "📸 Submit Work (Photo Report)",
-                statusPending: "⏳ Under Photo Review",
                 vipTaskBadge: "👑 VIP TASK (PRIORITY)",
                 prepayLabel: "🔒 Prepayment (5% Guarantee)"
             },
@@ -382,7 +350,7 @@
                 flag: "🇮🇹 IT ↕",
                 vipBadgeText: "🛡️ ᛟ Garanzia 5% (Anticipo)",
                 vipTitle: "Transazioni sicure",
-                vipDesc: "I fondi vengono rilasciati al professionista dopo verifica della foto.",
+                vipDesc: "I fondi vengono rilasciati al professionista dopo il completamento.",
                 vipBtn: "VIP 199 MDL",
                 searchPlaceholder: "Cerca compiti...",
                 optAllChisinau: "🏙️ Chisinau (Tutti)",
@@ -392,8 +360,6 @@
                 createBtn: "+ Crea",
                 noTasks: "Nessun compito attivo",
                 respondBtn: "Candidati / Contatta",
-                reportBtn: "📸 Consegna Lavoro (Foto)",
-                statusPending: "⏳ In Verifica Foto",
                 vipTaskBadge: "👑 ORDINE VIP (PRIORITÀ)",
                 prepayLabel: "🔒 Con acconto (Garanzia 5%)"
             }
@@ -447,12 +413,6 @@
         function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
 
-        function openReportModal(taskId) {
-            document.getElementById('reportTaskId').value = taskId;
-            document.getElementById('reportModal').classList.remove('hidden');
-        }
-        function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
-
         function openContactModal(contactInfo) {
             const contactDiv = document.getElementById('contactDetails');
             const tgLinkBtn = document.getElementById('directTgLink');
@@ -466,7 +426,7 @@
             } else {
                 tgLinkBtn.classList.add('hidden');
             }
-            document.getElementById('contactModal').classList.remove('hidden');
+            document.getElementById('contactModal').classList.add('hidden');
         }
 
         function confirmVipPayment() {
@@ -513,8 +473,6 @@
                 const contact = task.contact || task.username || '@profitum_support';
                 const hasPrepay = task.prepay || task.is_prepay;
                 const isVip = task.is_vip;
-                const imageUrl = task.image_url;
-                const reportUrl = task.report_image_url;
 
                 return `
                 <div class="bg-white/95 backdrop-blur-sm border ${isVip ? 'border-amber-400 ring-2 ring-amber-400/20 shadow-md' : 'border-gray-100'} p-4 rounded-2xl shadow-sm hover:shadow-md transition space-y-3 relative overflow-hidden">
@@ -534,36 +492,16 @@
                         <span class="text-emerald-600 font-bold text-sm bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-100 whitespace-nowrap">${task.price || 0} MDL</span>
                     </div>
                     <p class="text-xs text-gray-600 leading-relaxed">${task.desc || task.description || ''}</p>
-                    
-                    ${imageUrl ? `
-                    <div class="space-y-1">
-                        <span class="text-[10px] text-gray-400 font-medium block">📷 Фото объекта:</span>
-                        <div class="rounded-xl overflow-hidden border border-gray-100 bg-gray-50 max-h-40 flex items-center justify-center">
-                            <img src="${imageUrl}" alt="Фото задачи" class="w-full object-cover max-h-40">
-                        </div>
-                    </div>` : ''}
-
-                    ${reportUrl ? `
-                    <div class="space-y-1 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-                        <span class="text-[10px] text-amber-800 font-bold block">${t.statusPending}</span>
-                        <div class="rounded-lg overflow-hidden border border-amber-200 bg-white max-h-40 flex items-center justify-center">
-                            <img src="${reportUrl}" alt="Фотоотчет мастера" class="w-full object-cover max-h-40">
-                        </div>
-                    </div>` : ''}
 
                     <div class="flex justify-between items-center text-[11px] text-gray-500 pt-2 border-t border-gray-100">
                         <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md font-medium text-[10px]">📍 ${task.district || 'Centru'}</span>
                         <span class="bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-lg font-medium text-[10px]">${task.category || 'Услуги'}</span>
                     </div>
 
-                    <div class="space-y-1.5 pt-1">
+                    <div class="pt-1">
                         <button onclick="openContactModal('${contact}')" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-semibold py-2.5 rounded-xl shadow-sm transition">
                             💬 ${t.respondBtn}
                         </button>
-                        ${!reportUrl ? `
-                        <button onclick="openReportModal(${task.id})" class="w-full bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-semibold py-2 rounded-xl shadow-sm transition">
-                            ${t.reportBtn}
-                        </button>` : ''}
                     </div>
                 </div>
             `}).join('');
@@ -618,35 +556,7 @@
             btn.innerText = "Публикация...";
             btn.disabled = true;
 
-            let imageUrl = null;
-            const fileInput = document.getElementById('taskPhotoFile');
-
             try {
-                if (fileInput.files && fileInput.files[0]) {
-                    const file = fileInput.files[0];
-                    const fileName = `task_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-                    
-                    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/task-photos/${fileName}`, {
-                        method: 'POST',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Content-Type': file.type || 'image/jpeg'
-                        },
-                        body: file
-                    });
-
-                    if (!uploadRes.ok) {
-                        const errText = await uploadRes.text();
-                        alert("Ошибка загрузки фото: " + errText);
-                        btn.innerText = originalText;
-                        btn.disabled = false;
-                        return;
-                    }
-
-                    imageUrl = `${SUPABASE_URL}/storage/v1/object/public/task-photos/${fileName}`;
-                }
-
                 const newTask = {
                     title: document.getElementById('taskTitle').value,
                     price: parseFloat(document.getElementById('taskPrice').value),
@@ -655,71 +565,23 @@
                     category: document.getElementById('taskCategory').value,
                     desc: document.getElementById('taskDesc').value,
                     prepay: document.getElementById('taskPrepay').checked,
-                    image_url: imageUrl,
                     status: 'active',
                     is_vip: false
                 };
 
                 const { error } = await supabaseClient.from('tasks').insert([newTask]);
-                if (error) { alert("Ошибка: " + error.message); } 
-                else { closeCreateModal(); document.getElementById('createTaskForm').reset(); fetchTasks(); }
-            } catch (err) { alert("Ошибка: " + err.message); } 
-            finally { btn.innerText = originalText; btn.disabled = false; }
-        }
-
-        async function submitTaskReport() {
-            const taskId = document.getElementById('reportTaskId').value;
-            const fileInput = document.getElementById('reportPhotoFile');
-            const btn = document.getElementById('reportSubmitBtn');
-
-            if (!fileInput.files || !fileInput.files[0]) {
-                alert("Пожалуйста, выберите фотоотчет!");
-                return;
-            }
-
-            btn.innerText = "Загрузка отчета...";
-            btn.disabled = true;
-
-            try {
-                const file = fileInput.files[0];
-                const fileName = `report_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-                
-                const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/task-photos/${fileName}`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': file.type || 'image/jpeg'
-                    },
-                    body: file
-                });
-
-                if (!uploadRes.ok) {
-                    const errText = await uploadRes.text();
-                    alert("Ошибка загрузки отчета: " + errText);
-                    btn.disabled = false;
-                    return;
+                if (error) { 
+                    alert("Ошибка публикации: " + error.message); 
+                } else { 
+                    closeCreateModal(); 
+                    document.getElementById('createTaskForm').reset(); 
+                    fetchTasks(); 
                 }
-
-                const reportUrl = `${SUPABASE_URL}/storage/v1/object/public/task-photos/${fileName}`;
-
-                const { error: updateError } = await supabaseClient
-                    .from('tasks')
-                    .update({ report_image_url: reportUrl, status: 'pending_verification' })
-                    .eq('id', taskId);
-
-                if (updateError) { alert("Ошибка обновления: " + updateError.message); } 
-                else {
-                    closeReportModal();
-                    document.getElementById('reportPhotoFile').value = '';
-                    alert("Фотоотчет успешно отправлен!");
-                    fetchTasks();
-                }
-            } catch (err) {
-                alert("Ошибка: " + err.message);
-            } finally {
-                btn.innerText = "📤 Отправить отчет на проверку";
-                btn.disabled = false;
+            } catch (err) { 
+                alert("Ошибка: " + err.message); 
+            } finally { 
+                btn.innerText = originalText; 
+                btn.disabled = false; 
             }
         }
 
