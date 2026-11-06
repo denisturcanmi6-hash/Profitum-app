@@ -163,12 +163,13 @@
         
         <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-left space-y-1">
             <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">⚡ MIA Instant Payments (Secure)</span>
-            <p class="text-xs text-gray-700" data-i18n="miaInstruction">Нажмите кнопку ниже для моментального списания и активации VIP статуса на платформе:</p>
+            <p class="text-xs text-gray-700" data-i18n="miaInstruction">Переведите 199 MDL по номеру телефона:</p>
+            <div class="bg-white p-2 rounded border border-amber-300 font-mono text-xs font-bold text-center text-amber-900" id="mia-phone-display">+373 60 000 000 (Profitum SRL)</div>
         </div>
 
         <button onclick="payVipRealGateway()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2.5 rounded-lg text-sm shadow-sm transition flex items-center justify-center space-x-2">
             <i class="fa-solid fa-bolt"></i>
-            <span data-i18n="proModalBtn">Оплатить 199 MDL внутри сайта</span>
+            <span data-i18n="proModalBtn">Оплатить через MIA / Карту</span>
         </button>
         <button onclick="closeProModal()" class="text-xs text-gray-400 hover:text-gray-600 mt-2 block w-full" data-i18n="closeBtn">Закрыть</button>
     </div>
@@ -179,12 +180,12 @@
     // КОНФИГУРАЦИЯ ПЛАТЕЖНЫХ ШЛЮЗОВ И API КЛЮЧЕЙ
     // ==========================================
     const PAYMENT_CONFIG = {
-        mode: "sandbox", // Замените на "live" при переходе в реальный режим
+        mode: "sandbox", 
         currency: "MDL",
-        merchantId: "PROFITUM_CHISINAU_DEMO", // Сюда вставите Merchant ID от банка (например, MAIB)
-        apiKey: "",                        // Сюда вставите ваш секретный API ключ
-        miaPhone: "+37360000000",            // Ваш молдавский номер для MIA
-        commissionRate: 0.05               // Ваша комиссия платформы 5%
+        merchantId: "PROFITUM_CHISINAU_DEMO", 
+        apiKey: "",                        
+        miaPhone: "+373 60 000 000",          // Сюда укажете ваш реальный номер для MIA
+        commissionRate: 0.05               
     };
 
     const tg = window.Telegram?.WebApp;
@@ -202,7 +203,8 @@
             desc: "Azi urgent", 
             vip: true, 
             secureFunds: false,
-            client: "Вы (Клиент)",
+            client: "Profitum User",
+            clientTelegram: "telegram", // Юзернейм для связи в Telegram без звонков
             clientRating: 5.0
         },
         { 
@@ -215,6 +217,7 @@
             vip: false, 
             secureFunds: false,
             client: "Елена К.",
+            clientTelegram: "telegram",
             clientRating: 4.7
         }
     ];
@@ -237,8 +240,8 @@
             phDesc: "Детали задачи...",
             proModalTitle: "Активация VIP статуса (199 MDL)",
             proModalDesc: "Мгновенная оплата через систему MIA прямо на сайте.",
-            miaInstruction: "Нажмите кнопку ниже для моментального списания и активации VIP статуса на платформе:",
-            proModalBtn: "Оплатить 199 MDL внутри сайта",
+            miaInstruction: "Переведите 199 MDL по номеру телефона:",
+            proModalBtn: "Оплатить через MIA / Карту",
             closeBtn: "Закрыть",
             vipBadge: "VIP 👑 (5%)",
             secureLabel: "🔒 Гарантия платформы",
@@ -271,8 +274,8 @@
             phDesc: "Detalii despre sarcină...",
             proModalTitle: "Activare statut VIP (199 MDL)",
             proModalDesc: "Plată instantanee prin sistemul MIA direct pe site.",
-            miaInstruction: "Apăsați butonul de mai jos pentru plată și activarea statutului VIP:",
-            proModalBtn: "Plătește 199 MDL pe site",
+            miaInstruction: "Transferați 199 MDL la numărul de telefon:",
+            proModalBtn: "Plătește prin MIA / Card",
             closeBtn: "Închide",
             vipBadge: "VIP 👑 (5%)",
             secureLabel: "🔒 Garanția platformei",
@@ -305,8 +308,8 @@
             phDesc: "Task details...",
             proModalTitle: "Activate VIP Status (199 MDL)",
             proModalDesc: "Instant payment via MIA right on the website.",
-            miaInstruction: "Click the button below to instantly pay and activate VIP status:",
-            proModalBtn: "Pay 199 MDL on site",
+            miaInstruction: "Transfer 199 MDL to phone number:",
+            proModalBtn: "Pay via MIA / Card",
             closeBtn: "Close",
             vipBadge: "VIP 👑 (5%)",
             secureLabel: "🔒 Escrow Protected",
@@ -339,8 +342,8 @@
             phDesc: "Dettagli del compito...",
             proModalTitle: "Attiva Stato VIP (199 MDL)",
             proModalDesc: "Pagamento istantaneo tramite MIA direttamente sul sito.",
-            miaInstruction: "Clicca sul pulsante per pagare e attivare lo status VIP:",
-            proModalBtn: "Paga 199 MDL sul sito",
+            miaInstruction: "Trasferisci 199 MDL al numero di telefono:",
+            proModalBtn: "Paga tramite MIA / Carta",
             closeBtn: "Chiudi",
             vipBadge: "VIP 👑 (5%)",
             secureLabel: "🔒 Fondi protetti",
@@ -362,185 +365,4 @@
         currentLang = lang;
         const t = translations[lang] || translations.ru;
 
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (t[key]) el.textContent = t[key];
-        });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-i18n-placeholder');
-            if (t[key]) el.placeholder = t[key];
-        });
-
-        const filterDistrict = document.getElementById('filter-district');
-        const newDistrict = document.getElementById('new-district');
-        
-        [filterDistrict, newDistrict].forEach((sel, idx) => {
-            if (sel && t.districts) {
-                const currentVal = sel.value;
-                sel.innerHTML = `
-                    ${idx === 0 ? `<option value="">${t.districts[0]}</option>` : ''}
-                    <option value="Centru">${t.districts[1]}</option>
-                    <option value="Râșcani">${t.districts[2]}</option>
-                    <option value="Botanica">${t.districts[3]}</option>
-                    <option value="Ciocana">${t.districts[4]}</option>
-                    <option value="Buiucani">${t.districts[5]}</option>
-                `;
-                sel.value = currentVal;
-            }
-        });
-
-        renderTasks(tasksList);
-    }
-
-    function renderTasks(tasks) {
-        const t = translations[currentLang] || translations.ru;
-        const container = document.getElementById('tasks-container');
-        if (!tasks.length) {
-            container.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">Нет заданий</div>`;
-            return;
-        }
-        container.innerHTML = tasks.map(item => `
-            <div onclick="openTaskModal(${item.id})" class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2 relative overflow-hidden cursor-pointer hover:border-emerald-300 transition">
-                ${item.vip ? `<div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">${t.vipBadge}</div>` : ''}
-                <div class="flex justify-between items-start pt-1">
-                    <h3 class="font-bold text-gray-900 text-sm pr-12">${item.title}</h3>
-                    <span class="font-bold text-emerald-600 text-sm">${item.price} MDL</span>
-                </div>
-                <p class="text-xs text-gray-600 line-clamp-1">${item.desc}</p>
-                <div class="flex items-center justify-between text-[11px] text-gray-500 pt-1">
-                    <span>👤 ${item.client} <span class="text-amber-500 font-semibold">⭐ ${item.clientRating}</span></span>
-                    <span class="${item.secureFunds ? 'text-emerald-700 font-semibold' : 'text-amber-600 font-semibold'}">${item.secureFunds ? t.secureLabel : t.cashLabel}</span>
-                </div>
-                <div class="flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-50">
-                    <span>📍 ${item.district}</span>
-                    <span class="bg-slate-100 px-2 py-1 rounded text-gray-600">${item.category}</span>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function filterTasks() {
-        const query = document.getElementById('search-input').value.toLowerCase();
-        const district = document.getElementById('filter-district').value;
-        const filtered = tasksList.filter(item => 
-            (item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)) &&
-            (!district || item.district === district)
-        );
-        renderTasks(filtered);
-    }
-
-    let activeTaskId = null;
-    function openTaskModal(id) {
-        const item = tasksList.find(t => t.id === id);
-        if (!item) return;
-        activeTaskId = id;
-        const t = translations[currentLang] || translations.ru;
-
-        document.getElementById('modal-task-title').textContent = item.title;
-        document.getElementById('modal-task-desc').textContent = item.desc;
-        document.getElementById('modal-task-district').textContent = item.district;
-        document.getElementById('modal-client-name').textContent = item.client;
-        document.getElementById('modal-client-rating').textContent = item.clientRating;
-        
-        const fundsSpan = document.getElementById('modal-task-funds');
-        const descText = document.getElementById('escrow-desc-text');
-        const payBtn = document.getElementById('pay-escrow-btn');
-        const escrowBox = document.getElementById('escrow-box');
-
-        if (item.secureFunds) {
-            fundsSpan.textContent = t.fundsSecureYes;
-            fundsSpan.className = 'text-emerald-700 font-bold';
-            descText.textContent = t.fundsDesc;
-            escrowBox.className = 'bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-2';
-            payBtn.classList.add('hidden');
-        } else {
-            fundsSpan.textContent = t.fundsSecureNo;
-            fundsSpan.className = 'text-amber-700 font-bold';
-            descText.textContent = t.fundsDescNo;
-            escrowBox.className = 'bg-amber-50 border border-amber-200 p-3 rounded-xl space-y-2';
-            payBtn.classList.remove('hidden');
-        }
-
-        document.getElementById('task-modal').classList.remove('hidden');
-    }
-
-    function closeTaskModal() { document.getElementById('task-modal').classList.add('hidden'); }
-
-    function openCreateModal() { document.getElementById('create-modal').classList.remove('hidden'); }
-    function closeCreateModal() { document.getElementById('create-modal').classList.add('hidden'); }
-
-    function openProModal() { document.getElementById('pro-modal').classList.remove('hidden'); }
-    function closeProModal() { document.getElementById('pro-modal').classList.add('hidden'); }
-
-    function addTask() {
-        const title = document.getElementById('new-title').value.trim();
-        const district = document.getElementById('new-district').value;
-        const price = Number(document.getElementById('new-price').value);
-        const desc = document.getElementById('new-desc').value.trim();
-
-        if (!title || !price) {
-            alert('Заполните название и бюджет!');
-            return;
-        }
-
-        tasksList.unshift({
-            id: Date.now(),
-            title,
-            category: 'Услуги',
-            district,
-            price,
-            desc: desc || 'Без описания',
-            vip: true,
-            secureFunds: false,
-            client: "Вы (Клиент)",
-            clientRating: 5.0
-        });
-
-        renderTasks(tasksList);
-        closeCreateModal();
-
-        document.getElementById('new-title').value = '';
-        document.getElementById('new-price').value = '';
-        document.getElementById('new-desc').value = '';
-    }
-
-    // ==========================================
-    // ФУНКЦИИ РЕАЛЬНЫХ ПЛАТЕЖНЫХ ЗАПРОСОВ (API)
-    // ==========================================
-    function payTaskRealGateway() {
-        const item = tasksList.find(t => t.id === activeTaskId);
-        if (!item) return;
-
-        // Здесь в будущем будет реальный fetch-запрос к вашему бэкенду или платежному шлюзу банка:
-        // fetch('/api/create-payment', { method: 'POST', body: JSON.stringify({ amount: item.price, merchant: PAYMENT_CONFIG.merchantId }) })
-        
-        console.log(`Запрос платежа на сумму ${item.price} ${PAYMENT_CONFIG.currency} через мерчант ${PAYMENT_CONFIG.merchantId}`);
-        
-        // Эмуляция успешного ответа от платежного шлюза банка
-        setTimeout(() => {
-            item.secureFunds = true;
-            alert(`[API Sandbox]: Платеж на ${item.price} MDL успешно проведен через систему MIA! Средства зарезервированы.`);
-            openTaskModal(activeTaskId);
-            renderTasks(tasksList);
-        }, 500);
-    }
-
-    function payVipRealGateway() {
-        // Запрос на оплату 199 MDL за VIP-статус и комиссию 5% на ваш счет
-        console.log(`Запрос VIP статуса на номер ${PAYMENT_CONFIG.miaPhone} с комиссией ${PAYMENT_CONFIG.commissionRate * 100}%`);
-
-        setTimeout(() => {
-            alert(`[API Sandbox]: Оплата 199 MDL за VIP статус успешно поступила на счет ${PAYMENT_CONFIG.miaPhone}! Статус активирован.`);
-            closeProModal();
-        }, 500);
-    }
-
-    function contactClient() {
-        alert('Открытие чата с заказчиком в Telegram.');
-        closeTaskModal();
-    }
-
-    renderTasks(tasksList);
-</script>
-</body>
-</html>
+        document.querySelectorAll('[data-i18n]').forEach(el
