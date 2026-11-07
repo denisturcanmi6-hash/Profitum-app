@@ -436,8 +436,7 @@
                 taskTitlePlaceholder: "Es: Montare un armadio",
                 lblTaskPrice: "Compenso (MDL)",
                 lblTaskSector: "Quartiere / Città",
-                lblTaskContact: "Contatto (Telegram @username / Telefono)",
-                taskContactPlaceholder: "@username o +373...",
+                lblTaskContatto: "Contatto (Telegram @username / Telefono)",
                 lblTaskCategory: "Categoria",
                 lblTaskDesc: "Descrizione",
                 taskDescPlaceholder: "Dettagli del compito...",
@@ -536,14 +535,32 @@
             filterTasks();
         }
 
-        function openVipModal() { document.getElementById('vipModal').classList.remove('hidden'); }
-        function closeVipModal() { document.getElementById('vipModal').classList.add('hidden'); }
-        function openCreateModal() { document.getElementById('createModal').classList.remove('hidden'); }
-        function closeCreateModal() { document.getElementById('createModal').classList.add('hidden'); }
-        function closeContactModal() { document.getElementById('contactModal').classList.add('hidden'); }
+        // Функции модальных окон
+        function openVipModal() { 
+            document.getElementById('vipModal').classList.remove('hidden'); 
+        }
+        function closeVipModal() { 
+            document.getElementById('vipModal').classList.add('hidden'); 
+        }
+        
+        function openCreateModal() { 
+            document.getElementById('createModal').classList.remove('hidden'); 
+            autofillTaskForm();
+        }
+        function closeCreateModal() { 
+            document.getElementById('createModal').classList.add('hidden'); 
+        }
 
-        function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); }
-        function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
+        function closeContactModal() { 
+            document.getElementById('contactModal').classList.add('hidden'); 
+        }
+
+        function openAdminModal() { 
+            document.getElementById('adminModal').classList.remove('hidden'); 
+        }
+        function closeAdminModal() { 
+            document.getElementById('adminModal').classList.add('hidden'); 
+        }
 
         function openContactModal(contactInfo) {
             const contactDiv = document.getElementById('contactDetails');
@@ -754,81 +771,49 @@
             }
         }
 
-        fetchTasks();
-// 1. Получаем данные текущего пользователя из Telegram WebApp
-const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        // Автозаполнение и регистрация пользователя из Telegram WebApp
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
 
-if (tgUser) {
-    // А) Автоматически регистрируем гостя в таблице profiles при входе
-    async function registerGuest() {
-        const { error } = await supabase
-            .from('profiles')
-            .upsert([
-                {
-                    telegram_id: tgUser.id,
-                    username: tgUser.username || '',
-                    first_name: tgUser.first_name || 'Гость'
+        if (tgUser) {
+            async function registerGuest() {
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .upsert([
+                        {
+                            telegram_id: tgUser.id,
+                            username: tgUser.username || '',
+                            first_name: tgUser.first_name || 'Гость'
+                        }
+                    ], { onConflict: 'telegram_id' });
+
+                if (error) console.error('Ошибка сохранения профиля:', error);
+            }
+            registerGuest();
+        }
+
+        async function autofillTaskForm() {
+            if (!tgUser) return;
+
+            const contactInput = document.getElementById('taskContact');
+            if (contactInput && !contactInput.value) {
+                contactInput.value = tgUser.username ? `@${tgUser.username}` : '';
+            }
+
+            try {
+                const { data } = await supabaseClient
+                    .from('profiles')
+                    .select('phone')
+                    .eq('telegram_id', tgUser.id)
+                    .single();
+
+                if (data && data.phone && contactInput && contactInput.value.includes('+373') === false) {
+                    contactInput.value = data.phone;
                 }
-            ], { onConflict: 'telegram_id' });
-
-        if (error) console.error('Ошибка сохранения профиля:', error);
-    }
-    registerGuest();
-}
-
-// Б) Функция автозаполнения полей при открытии формы создания объявления
-async function autofillTaskForm() {
-    if (!tgUser) return;
-
-    // Подставляем username в поле ввода (замените 'username' на ID вашего HTML-инпутов)
-    const usernameInput = document.getElementById('username'); 
-    if (usernameInput) {
-        usernameInput.value = tgUser.username ? `@${tgUser.username}` : tgUser.first_name;
-    }
-
-    // Подтягиваем сохраненный телефон из базы profiles
-    const { data } = await supabase
-        .from('profiles')
-        .select('phone')
-        .eq('telegram_id', tgUser.id)
-        .single();
-
-    if (data && data.phone) {
-        const phoneInput = document.getElementById('phone'); // Замените 'phone' на ID поля телефона
-        if (phoneInput) {
-            phoneInput.value = data.phone;
+            } catch (e) {}
         }
-    }
-}
- // Подставляем username в поле ввода
-    const usernameInput = document.getElementById('username'); 
-    if (usernameInput) {
-        usernameInput.value = tgUser.username ? `@${tgUser.username}` : tgUser.first_name;
-    }
 
-    // Подтягиваем сохраненный телефон из базы profiles
-    const { data } = await supabase
-        .from('profiles')
-        .select('phone')
-        .eq('telegram_id', tgUser.id)
-        .single();
-
-    if (data && data.phone) {
-        const phoneInput = document.getElementById('phone'); 
-        if (phoneInput) {
-            phoneInput.value = data.phone;
-        }
-    }
-        // Функция для кнопки «Создать»
-function openCreateModal() {
-    alert('Открытие формы создания объявления...');
-}
-
-// Функция для кнопки «VIP»
-function openVipModal() {
-    alert('Открытие раздела VIP-мастеров...');
-}
-
-</script>
+        // Запуск загрузки задач при старте
+        fetchTasks();
+    </script>
 </body>
 </html>
